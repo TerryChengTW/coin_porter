@@ -1,0 +1,28 @@
+{
+  "supported_exchanges": [
+    {
+      "name": "binance",
+      "display_name": "Binance",
+      "class_name": "BinanceExchange",
+      "module": "src.core.exchanges.binance",
+      "supports_public_query": false,
+      "enabled": true
+    },
+    {
+      "name": "bybit",
+      "display_name": "Bybit", 
+      "class_name": "BybitExchange",
+      "module": "src.core.exchanges.bybit",
+      "supports_public_query": false,
+      "enabled": true
+    },
+    {
+      "name": "bitget",
+      "display_name": "Bitget",
+      "class_name": "BitgetExchange", 
+      "module": "src.core.exchanges.bitget",
+      "supports_public_query": true,
+      "enabled": true
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import os
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 from ..exchanges.base import AccountConfig
+from .exchanges_config import ExchangeConfigManager
 
 
 class APIKeyManager:
@@ -10,6 +11,7 @@ class APIKeyManager:
     
     def __init__(self, config_file: str = "api_keys.json"):
         self.config_file = config_file
+        self.exchange_config_manager = ExchangeConfigManager()
         self._config = self._load_config()
         
         # 轉換配置結構：從扁平結構轉為巢狀結構
@@ -17,16 +19,18 @@ class APIKeyManager:
         
         # 確保配置結構
         if "enabled_exchanges" not in self._config:
-            self._config["enabled_exchanges"] = ["binance", "bybit", "bitget"]  # 默認全部
+            self._config["enabled_exchanges"] = self.exchange_config_manager.get_enabled_exchanges()
         if "accounts" not in self._config:
             self._config["accounts"] = {}
     
     def _convert_config_structure(self):
         """轉換配置結構：從 api_keys.json 的扁平結構轉為內部的巢狀結構"""
-        if "accounts" not in self._config and any(key in ["binance", "bybit", "bitget"] for key in self._config.keys()):
+        enabled_exchanges = self.exchange_config_manager.get_enabled_exchanges()
+        
+        if "accounts" not in self._config and any(key in enabled_exchanges for key in self._config.keys()):
             # 檢測到舊格式，轉換為新格式
             accounts = {}
-            for exchange in ["binance", "bybit", "bitget"]:
+            for exchange in enabled_exchanges:
                 if exchange in self._config:
                     accounts[exchange] = self._config[exchange]
             
@@ -116,7 +120,7 @@ class APIKeyManager:
     
     def get_enabled_exchanges(self) -> List[str]:
         """獲取啟用的交易所列表"""
-        return self._config.get("enabled_exchanges", ["binance", "bybit", "bitget"])
+        return self._config.get("enabled_exchanges", self.exchange_config_manager.get_enabled_exchanges())
     
     def is_exchange_enabled(self, exchange: str) -> bool:
         """檢查交易所是否啟用"""

@@ -1,10 +1,8 @@
 import asyncio
 from typing import Dict, List, Optional, Tuple
 from .base import BaseExchange, NetworkInfo, ExchangeFactory
-from .binance import BinanceExchange
-from .bybit import BybitExchange  
-from .bitget import BitgetExchange
 from ..config.api_keys import APIKeyManager
+from ..config.exchanges_config import ExchangeConfigManager
 
 
 class ExchangeManager:
@@ -12,14 +10,19 @@ class ExchangeManager:
     
     def __init__(self, api_key_manager: APIKeyManager):
         self.api_key_manager = api_key_manager
+        self.config_manager = ExchangeConfigManager()
         self._exchanges: Dict[str, BaseExchange] = {}
         
-        # 註冊所有支援的交易所
-        ExchangeFactory.register("binance", BinanceExchange)
-        ExchangeFactory.register("bybit", BybitExchange)
-        ExchangeFactory.register("bitget", BitgetExchange)
-        
+        # 動態註冊所有支援的交易所
+        self._register_exchanges()
         self._initialize_exchanges()
+    
+    def _register_exchanges(self):
+        """動態註冊交易所類別"""
+        for exchange_name in self.config_manager.get_enabled_exchanges():
+            exchange_class = self.config_manager.get_exchange_class(exchange_name)
+            if exchange_class:
+                ExchangeFactory.register(exchange_name, exchange_class)
     
     def _initialize_exchanges(self):
         """初始化已啟用且已配置的交易所"""
@@ -42,8 +45,8 @@ class ExchangeManager:
         
         for exchange_name in enabled_exchanges:
             if exchange_name not in self._exchanges:
-                # 對於支援公開查詢的交易所（如 Bitget），創建無認證實例
-                if exchange_name == "bitget":
+                # 對於支援公開查詢的交易所，創建無認證實例
+                if self.config_manager.supports_public_query(exchange_name):
                     exchange = ExchangeFactory.create(exchange_name, None)
                     self._exchanges[f"{exchange_name}_public"] = exchange
     
@@ -146,4 +149,4 @@ class ExchangeManager:
         return (
             self.api_key_manager.is_exchange_enabled(exchange_name) and 
             self.api_key_manager.has_exchange_account(exchange_name)
-        ) or (exchange_name == "bitget")  # Bitget 支援公開查詢
+        ) or self.config_manager.supports_public_query(exchange_name)

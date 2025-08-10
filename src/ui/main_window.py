@@ -12,6 +12,7 @@ from PySide6.QtGui import QFont, QIcon
 
 from ..core.exchanges.manager import ExchangeManager
 from ..core.config.api_keys import APIKeyManager
+from ..core.config.exchanges_config import ExchangeConfigManager
 from ..core.exchanges.base import NetworkInfo
 
 
@@ -67,6 +68,7 @@ class MainWindow(QMainWindow):
         
         # 初始化管理器
         self.api_manager = APIKeyManager()
+        self.config_manager = ExchangeConfigManager()
         self.exchange_manager = ExchangeManager(self.api_manager)
         
         # 追蹤工作執行緒
@@ -119,7 +121,8 @@ class MainWindow(QMainWindow):
         # 交易所選擇
         control_layout.addWidget(QLabel("交易所:"))
         self.exchange_combo = QComboBox()
-        self.exchange_combo.addItems(["所有交易所", "binance", "bybit", "bitget"])
+        exchange_names = ["所有交易所"] + self.config_manager.get_exchange_names()
+        self.exchange_combo.addItems(exchange_names)
         control_layout.addWidget(self.exchange_combo)
         
         # 幣種輸入
@@ -182,7 +185,7 @@ class MainWindow(QMainWindow):
         source_layout = QHBoxLayout()
         source_layout.addWidget(QLabel("來源交易所:"))
         self.source_exchange = QComboBox()
-        self.source_exchange.addItems(["binance", "bybit", "bitget"])
+        self.source_exchange.addItems(self.config_manager.get_exchange_names())
         source_layout.addWidget(self.source_exchange)
         transfer_layout.addLayout(source_layout)
         
@@ -190,7 +193,7 @@ class MainWindow(QMainWindow):
         target_layout = QHBoxLayout()
         target_layout.addWidget(QLabel("目標交易所:"))
         self.target_exchange = QComboBox()
-        self.target_exchange.addItems(["binance", "bybit", "bitget"])
+        self.target_exchange.addItems(self.config_manager.get_exchange_names())
         target_layout.addWidget(self.target_exchange)
         transfer_layout.addLayout(target_layout)
         
@@ -224,7 +227,7 @@ class MainWindow(QMainWindow):
         
         selected_exchange = self.exchange_combo.currentText()
         if selected_exchange == "所有交易所":
-            exchanges = ["binance", "bybit", "bitget"]
+            exchanges = self.config_manager.get_exchange_names()
         else:
             exchanges = [selected_exchange]
             
@@ -249,7 +252,7 @@ class MainWindow(QMainWindow):
         
         selected_exchange = self.exchange_combo.currentText()
         if selected_exchange == "所有交易所":
-            exchanges = ["binance", "bybit", "bitget"]
+            exchanges = self.config_manager.get_exchange_names()
         else:
             exchanges = [selected_exchange]
             
