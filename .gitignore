@@ -137,3 +137,5 @@ logs/
 *.log
 login_config.json
 theme_settings.json
+user_preferences.json
+*keys*.json
