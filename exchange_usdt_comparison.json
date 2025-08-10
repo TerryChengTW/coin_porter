@@ -1,0 +1,305 @@
+{
+  "USDT_comparison": {
+    "binance": {
+      "coin": "USDT",
+      "name": "TetherUS",
+      "depositAllEnable": true,
+      "withdrawAllEnable": true,
+      "trading": true,
+      "networkList": [
+        {
+          "network": "BSC",
+          "coin": "USDT",
+          "name": "BNB Smart Chain (BEP20)",
+          "depositEnable": true,
+          "withdrawEnable": true,
+          "withdrawFee": "0",
+          "withdrawMin": "10",
+          "withdrawMax": "20000000",
+          "contractAddress": "0x55d398326f99059ff775485246999027b3197955",
+          "contractAddressUrl": "https://bscscan.com/token/"
+        },
+        {
+          "network": "ETH",
+          "coin": "USDT",
+          "name": "Ethereum (ERC20)",
+          "depositEnable": true,
+          "withdrawEnable": true,
+          "withdrawFee": "1.2",
+          "withdrawMin": "10",
+          "withdrawMax": "10000000000",
+          "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "contractAddressUrl": "https://etherscan.io/address/"
+        },
+        {
+          "network": "TRX",
+          "coin": "USDT",
+          "name": "Tron (TRC20)",
+          "depositEnable": true,
+          "withdrawEnable": true,
+          "withdrawFee": "1",
+          "withdrawMin": "10",
+          "withdrawMax": "10000000000",
+          "contractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "contractAddressUrl": "https://tronscan.org/#/token20/"
+        },
+        {
+          "network": "ARBITRUM",
+          "coin": "USDT",
+          "name": "Arbitrum One",
+          "depositEnable": true,
+          "withdrawEnable": true,
+          "withdrawFee": "0.17",
+          "withdrawMin": "0.34",
+          "withdrawMax": "20000000",
+          "contractAddress": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "contractAddressUrl": "https://arbiscan.io/token/"
+        },
+        {
+          "network": "SOL",
+          "coin": "USDT",
+          "name": "Solana",
+          "depositEnable": true,
+          "withdrawEnable": true,
+          "withdrawFee": "0.5",
+          "withdrawMin": "10",
+          "withdrawMax": "30000000",
+          "contractAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          "contractAddressUrl": "https://explorer.solana.com/address/"
+        }
+      ]
+    },
+    "bybit": {
+      "retCode": 0,
+      "retMsg": "success",
+      "result": {
+        "rows": [
+          {
+            "name": "USDT",
+            "coin": "USDT",
+            "remainAmount": "50000000000",
+            "chains": [
+              {
+                "chainType": "BNB Smart Chain",
+                "confirmation": "60",
+                "withdrawFee": "1",
+                "depositMin": "0.005",
+                "withdrawMin": "10",
+                "chain": "BSC",
+                "chainDeposit": "1",
+                "chainWithdraw": "1",
+                "minAccuracy": "4",
+                "withdrawPercentageFee": "0",
+                "contractAddress": "0x55d398326f99059ff775485246999027b3197955",
+                "safeConfirmNumber": "60"
+              },
+              {
+                "chainType": "Ethereum",
+                "confirmation": "6",
+                "withdrawFee": "4",
+                "depositMin": "0.005",
+                "withdrawMin": "10",
+                "chain": "ETH",
+                "chainDeposit": "1",
+                "chainWithdraw": "1",
+                "minAccuracy": "4",
+                "withdrawPercentageFee": "0",
+                "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "safeConfirmNumber": "64"
+              },
+              {
+                "chainType": "TRX",
+                "confirmation": "20",
+                "withdrawFee": "1",
+                "depositMin": "0",
+                "withdrawMin": "2.6",
+                "chain": "TRX",
+                "chainDeposit": "1",
+                "chainWithdraw": "1",
+                "minAccuracy": "4",
+                "withdrawPercentageFee": "0",
+                "contractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+                "safeConfirmNumber": "20"
+              },
+              {
+                "chainType": "Arbitrum One",
+                "confirmation": "120",
+                "withdrawFee": "1",
+                "depositMin": "0",
+                "withdrawMin": "1",
+                "chain": "ARBI",
+                "chainDeposit": "1",
+                "chainWithdraw": "1",
+                "minAccuracy": "4",
+                "withdrawPercentageFee": "0",
+                "contractAddress": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+                "safeConfirmNumber": "3360"
+              },
+              {
+                "chainType": "SOL",
+                "confirmation": "200",
+                "withdrawFee": "1",
+                "depositMin": "0.005",
+                "withdrawMin": "10",
+                "chain": "SOL",
+                "chainDeposit": "1",
+                "chainWithdraw": "1",
+                "minAccuracy": "4",
+                "withdrawPercentageFee": "0",
+                "contractAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                "safeConfirmNumber": "200"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "bitget": {
+      "code": "00000",
+      "msg": "success",
+      "requestTime": 1754850519885,
+      "data": [
+        {
+          "coinId": "2",
+          "coin": "USDT",
+          "transfer": "true",
+          "chains": [
+            {
+              "chain": "ERC20",
+              "needTag": "false",
+              "withdrawable": "true",
+              "rechargeable": "true",
+              "withdrawFee": "3",
+              "extraWithdrawFee": "0",
+              "depositConfirm": "12",
+              "withdrawConfirm": "64",
+              "minDepositAmount": "0.01",
+              "minWithdrawAmount": "10",
+              "browserUrl": "https://etherscan.io/tx/",
+              "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+              "withdrawStep": "0",
+              "withdrawMinScale": "6",
+              "congestion": "normal"
+            },
+            {
+              "chain": "TRC20",
+              "needTag": "false",
+              "withdrawable": "true",
+              "rechargeable": "true",
+              "withdrawFee": "1.5",
+              "extraWithdrawFee": "0",
+              "depositConfirm": "1",
+              "withdrawConfirm": "1",
+              "minDepositAmount": "0.01",
+              "minWithdrawAmount": "10",
+              "browserUrl": "https://tronscan.org/#/transaction/",
+              "contractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+              "withdrawStep": "0",
+              "withdrawMinScale": "6",
+              "congestion": "normal"
+            },
+            {
+              "chain": "ArbitrumOne",
+              "needTag": "false",
+              "withdrawable": "true",
+              "rechargeable": "true",
+              "withdrawFee": "0.2",
+              "extraWithdrawFee": "0",
+              "depositConfirm": "24",
+              "withdrawConfirm": "24",
+              "minDepositAmount": "0.01",
+              "minWithdrawAmount": "10",
+              "browserUrl": "https://arbiscan.io/tx/",
+              "contractAddress": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+              "withdrawStep": "0",
+              "withdrawMinScale": "6",
+              "congestion": "normal"
+            },
+            {
+              "chain": "BEP20",
+              "needTag": "false",
+              "withdrawable": "true",
+              "rechargeable": "true",
+              "withdrawFee": "0",
+              "extraWithdrawFee": "0",
+              "depositConfirm": "15",
+              "withdrawConfirm": "15",
+              "minDepositAmount": "0.01",
+              "minWithdrawAmount": "10",
+              "browserUrl": "https://bscscan.com/tx/",
+              "contractAddress": "0x55d398326f99059ff775485246999027b3197955",
+              "withdrawStep": "0",
+              "withdrawMinScale": "8",
+              "congestion": "normal"
+            },
+            {
+              "chain": "SOL",
+              "needTag": "false",
+              "withdrawable": "true",
+              "rechargeable": "true",
+              "withdrawFee": "1",
+              "extraWithdrawFee": "0",
+              "depositConfirm": "5",
+              "withdrawConfirm": "5",
+              "minDepositAmount": "0.01",
+              "minWithdrawAmount": "10",
+              "browserUrl": "https://solscan.io/tx/",
+              "contractAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+              "withdrawStep": "0",
+              "withdrawMinScale": "6",
+              "congestion": "normal"
+            }
+          ],
+          "areaCoin": "no"
+        }
+      ]
+    },
+    "contract_address_comparison": {
+      "ethereum": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "binance_network": "ETH",
+        "bybit_network": "ETH", 
+        "bitget_network": "ERC20",
+        "matches": true
+      },
+      "bsc": {
+        "contract": "0x55d398326f99059ff775485246999027b3197955",
+        "binance_network": "BSC",
+        "bybit_network": "BSC",
+        "bitget_network": "BEP20", 
+        "matches": true
+      },
+      "tron": {
+        "contract": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        "binance_network": "TRX",
+        "bybit_network": "TRX",
+        "bitget_network": "TRC20",
+        "matches": true
+      },
+      "arbitrum": {
+        "contract": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "binance_network": "ARBITRUM",
+        "bybit_network": "ARBI",
+        "bitget_network": "ArbitrumOne",
+        "matches": true
+      },
+      "solana": {
+        "contract": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        "binance_network": "SOL",
+        "bybit_network": "SOL",
+        "bitget_network": "SOL",
+        "matches": true
+      }
+    },
+    "analysis": {
+      "contract_address_reliability": "高度可靠 - 三個交易所在同一鏈上的 USDT 合約地址完全一致",
+      "network_name_inconsistency": {
+        "ethereum": ["ETH", "ETH", "ERC20"],
+        "bsc": ["BSC", "BSC", "BEP20"], 
+        "tron": ["TRX", "TRX", "TRC20"],
+        "arbitrum": ["ARBITRUM", "ARBI", "ArbitrumOne"]
+      },
+      "recommendation": "使用 contract address 作為主要匹配標準，網路名稱僅作為參考"
+    }
+  }
+}
