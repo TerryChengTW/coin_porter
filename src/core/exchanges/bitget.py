@@ -3,11 +3,19 @@ from typing import Dict, List, Optional
 from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
 
 try:
-    from bitget.v2.spot.market_api import MarketApi
-    from bitget.bitget_api import BitgetApi
+    import sys
+    import os
+    # 添加 Bitget SDK 路徑
+    sdk_path = os.path.join(os.path.dirname(__file__), '..', '..', 'third-party', 'bitget-sdk')
+    if sdk_path not in sys.path:
+        sys.path.append(sdk_path)
+    
+    from v2.spot.market_api import MarketApi
+    from bitget_api import BitgetApi
 except ImportError:
     # SDK 未安裝時的處理
-    pass
+    MarketApi = None
+    BitgetApi = None
 
 
 class BitgetExchange(BaseExchange):
@@ -25,19 +33,17 @@ class BitgetExchange(BaseExchange):
             self._setup_private_client()
     
     def _setup_public_client(self):
-        """設定 Bitget 公開客戶端（不需認證）"""
-        try:
-            # 公開 API 不需要認證資訊
-            self._public_client = MarketApi("", "", "")
-        except:
-            pass
+        """設定 Bitget 公開客戶端（實際上 MarketApi 仍需認證）"""
+        # Bitget 的 MarketApi 實際上需要認證，沒有純公開版本
+        self._public_client = None
     
     def _setup_private_client(self):
         """設定 Bitget 私有客戶端"""
-        if not self.account_config:
+        if not self.account_config or not MarketApi:
             return
             
-        self._private_client = BitgetApi(
+        # 使用 MarketApi 來查詢市場資料
+        self._private_client = MarketApi(
             api_key=self.account_config.api_key,
             api_secret_key=self.account_config.secret,
             passphrase=self.account_config.passphrase,
@@ -46,16 +52,18 @@ class BitgetExchange(BaseExchange):
         )
     
     async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表（公開端點，不需認證）"""
-        if not self._public_client:
-            raise Exception("Bitget 公開客戶端未初始化")
+        """獲取支援的幣種列表（需要認證）"""
+        self._ensure_auth()
+        
+        if not self._private_client:
+            raise Exception("Bitget client not available - SDK may not be installed")
         
         try:
-            # 使用公開端點查詢所有幣種
+            # 使用認證端點查詢所有幣種
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None, 
-                lambda: self._public_client.coins({})
+                lambda: self._private_client.public_coins({})
             )
             
             if response.get('code') != '00000':
@@ -64,25 +72,27 @@ class BitgetExchange(BaseExchange):
             # 提取幣種名稱
             currencies = []
             for coin_info in response.get('data', []):
-                coin = coin_info.get('coinName', '')
+                coin = coin_info.get('coin', '')  # Bitget 使用 'coin' 而不是 'coinName'
                 if coin:
                     currencies.append(coin)
             
             return sorted(list(set(currencies)))  # 去重並排序
             
         except Exception as e:
-            raise Exception(f"Bitget 查詢支援幣種失敗: {str(e)}")
+            raise Exception(f"Bitget query failed: {str(e)}")
     
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
-        """獲取指定幣種支援的網路資訊（公開端點）"""
-        if not self._public_client:
-            raise Exception("Bitget 公開客戶端未初始化")
+        """獲取指定幣種支援的網路資訊（需要認證）"""
+        self._ensure_auth()
+        
+        if not self._private_client:
+            raise Exception("Bitget client not available")
         
         try:
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None, 
-                lambda: self._public_client.coins({"coin": currency.upper()})
+                lambda: self._private_client.public_coins({"coin": currency.upper()})
             )
             
             if response.get('code') != '00000':
@@ -90,21 +100,21 @@ class BitgetExchange(BaseExchange):
             
             networks = []
             for coin_info in response.get('data', []):
-                if coin_info.get('coinName') == currency.upper():
+                if coin_info.get('coin') == currency.upper():  # 使用 'coin' 而不是 'coinName'
                     for chain_info in coin_info.get('chains', []):
                         networks.append(NetworkInfo(
                             network=chain_info.get('chain', ''),
                             min_withdrawal=float(chain_info.get('minWithdrawAmount', 0)),
                             withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
-                            deposit_enabled=chain_info.get('rechargeable', False),
-                            withdrawal_enabled=chain_info.get('withdrawable', False)
+                            deposit_enabled=chain_info.get('rechargeable') == 'true',  # 字串比較
+                            withdrawal_enabled=chain_info.get('withdrawable') == 'true'  # 字串比較
                         ))
                     break
             
             return networks
             
         except Exception as e:
-            raise Exception(f"Bitget 查詢幣種網路資訊失敗: {str(e)}")
+            raise Exception(f"Bitget network query failed: {str(e)}")
     
     async def get_deposit_address(self, currency: str, network: str) -> str:
         """獲取入金地址"""

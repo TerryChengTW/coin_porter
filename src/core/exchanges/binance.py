@@ -4,11 +4,13 @@ from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
 
 try:
     from binance_common.configuration import ConfigurationRestAPI
-    from binance_common.constants import WALLET_REST_API_PROD_URL, WALLET_REST_API_TEST_URL
+    from binance_common.constants import WALLET_REST_API_PROD_URL
     from binance_sdk_wallet.wallet import Wallet
 except ImportError:
     # SDK 未安裝時的處理
-    pass
+    ConfigurationRestAPI = None
+    WALLET_REST_API_PROD_URL = None
+    Wallet = None
 
 
 class BinanceExchange(BaseExchange):
@@ -23,15 +25,13 @@ class BinanceExchange(BaseExchange):
     
     def _setup_client(self):
         """設定 Binance 客戶端"""
-        if not self.account_config:
+        if not self.account_config or not Wallet:
             return
             
-        base_url = WALLET_REST_API_TEST_URL if self.account_config.testnet else WALLET_REST_API_PROD_URL
-        
         configuration = ConfigurationRestAPI(
             api_key=self.account_config.api_key,
             api_secret=self.account_config.secret,
-            base_path=base_url
+            base_path=WALLET_REST_API_PROD_URL
         )
         
         self._client = Wallet(config_rest_api=configuration)
@@ -39,6 +39,9 @@ class BinanceExchange(BaseExchange):
     async def get_supported_currencies(self) -> List[str]:
         """獲取支援的幣種列表（需要認證）"""
         self._ensure_auth()
+        
+        if not self._client:
+            raise Exception("Binance client not available - SDK may not be installed")
         
         try:
             # 在執行緒池中執行同步呼叫
@@ -53,12 +56,15 @@ class BinanceExchange(BaseExchange):
             # 提取幣種名稱
             currencies = []
             for coin_info in data:
-                currencies.append(coin_info.get('coin', ''))
+                # Binance SDK 回傳的是物件，不是字典
+                coin = getattr(coin_info, 'coin', '')
+                if coin:
+                    currencies.append(coin)
             
             return sorted(list(set(currencies)))  # 去重並排序
             
         except Exception as e:
-            raise Exception(f"Binance 查詢支援幣種失敗: {str(e)}")
+            raise Exception(f"Binance query failed: {str(e)}")
     
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊（需要認證）"""
@@ -75,15 +81,16 @@ class BinanceExchange(BaseExchange):
             
             # 尋找指定幣種
             for coin_info in data:
-                if coin_info.get('coin') == currency.upper():
+                if getattr(coin_info, 'coin', '') == currency.upper():
                     networks = []
-                    for network_info in coin_info.get('networkList', []):
+                    network_list = getattr(coin_info, 'network_list', [])
+                    for network_info in network_list:
                         networks.append(NetworkInfo(
-                            network=network_info.get('network', ''),
-                            min_withdrawal=float(network_info.get('withdrawMin', 0)),
-                            withdrawal_fee=float(network_info.get('withdrawFee', 0)),
-                            deposit_enabled=network_info.get('depositEnable', False),
-                            withdrawal_enabled=network_info.get('withdrawEnable', False)
+                            network=getattr(network_info, 'network', ''),
+                            min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
+                            withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
+                            deposit_enabled=getattr(network_info, 'deposit_enable', False),
+                            withdrawal_enabled=getattr(network_info, 'withdraw_enable', False)
                         ))
                     return networks
             

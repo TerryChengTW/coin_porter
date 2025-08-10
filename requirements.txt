@@ -1,0 +1,7 @@
+# 交易所 SDK
+binance-sdk-wallet
+pybit
+
+# 基礎套件
+asyncio
+typing-extensions
