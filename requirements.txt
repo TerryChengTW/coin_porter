@@ -2,6 +2,9 @@
 binance-sdk-wallet
 pybit
 
+# GUI 框架
+PySide6
+
 # 基礎套件
 asyncio
 typing-extensions
