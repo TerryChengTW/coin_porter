@@ -1,0 +1,372 @@
+{
+  "retCode": 0,
+  "retMsg": "success",
+  "result": {
+    "rows": [
+      {
+        "name": "BTC",
+        "coin": "BTC",
+        "remainAmount": "5370",
+        "chains": [
+          {
+            "chainType": "Bitcoin",
+            "confirmation": "1",
+            "withdrawFee": "0.00011",
+            "depositMin": "0.00001",
+            "withdrawMin": "0.00027",
+            "chain": "BTC",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "8",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "",
+            "safeConfirmNumber": "2"
+          }
+        ]
+      },
+      {
+        "name": "CAT",
+        "coin": "CAT",
+        "remainAmount": "500000000000",
+        "chains": [
+          {
+            "chainType": "BNB Smart Chain ",
+            "confirmation": "60",
+            "withdrawFee": "50000",
+            "depositMin": "0",
+            "withdrawMin": "100000",
+            "chain": "BSC",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "8",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x6894CDe390a3f51155ea41Ed24a33A4827d3063D",
+            "safeConfirmNumber": "60"
+          }
+        ]
+      },
+      {
+        "name": "EOS",
+        "coin": "EOS",
+        "remainAmount": "5000000",
+        "chains": [
+          {
+            "chainType": "Vaulta",
+            "confirmation": "1",
+            "withdrawFee": "0.08",
+            "depositMin": "0",
+            "withdrawMin": "0.08",
+            "chain": "EOS",
+            "chainDeposit": "0",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "eosio.token",
+            "safeConfirmNumber": "1"
+          }
+        ]
+      },
+      {
+        "name": "SATS",
+        "coin": "SATS",
+        "remainAmount": "1900000000000",
+        "chains": [
+          {
+            "chainType": "Bitcoin",
+            "confirmation": "3",
+            "withdrawFee": "40000000",
+            "depositMin": "0",
+            "withdrawMin": "80000000",
+            "chain": "BTC",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "8",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "sats",
+            "safeConfirmNumber": "3"
+          }
+        ]
+      },
+      {
+        "name": "USDT",
+        "coin": "USDT",
+        "remainAmount": "50000000000",
+        "chains": [
+          {
+            "chainType": "Aptos",
+            "confirmation": "1",
+            "withdrawFee": "0",
+            "depositMin": "0.001",
+            "withdrawMin": "0",
+            "chain": "APTOS",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b",
+            "safeConfirmNumber": "1"
+          },
+          {
+            "chainType": "Arbitrum One",
+            "confirmation": "120",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "ARBI",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+            "safeConfirmNumber": "3360"
+          },
+          {
+            "chainType": "Berachain",
+            "confirmation": "12",
+            "withdrawFee": "0",
+            "depositMin": "0",
+            "withdrawMin": "2",
+            "chain": "BERA",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
+            "safeConfirmNumber": "12"
+          },
+          {
+            "chainType": "BNB Smart Chain",
+            "confirmation": "60",
+            "withdrawFee": "1",
+            "depositMin": "0.005",
+            "withdrawMin": "10",
+            "chain": "BSC",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x55d398326f99059ff775485246999027b3197955",
+            "safeConfirmNumber": "60"
+          },
+          {
+            "chainType": "CAVAX",
+            "confirmation": "30",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "10",
+            "chain": "CAVAX",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+            "safeConfirmNumber": "120"
+          },
+          {
+            "chainType": "CELO",
+            "confirmation": "10",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "CELO",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e",
+            "safeConfirmNumber": "3600"
+          },
+          {
+            "chainType": "CORN",
+            "confirmation": "30",
+            "withdrawFee": "0",
+            "depositMin": "0",
+            "withdrawMin": "2",
+            "chain": "CORN",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+            "safeConfirmNumber": "600"
+          },
+          {
+            "chainType": "Ethereum",
+            "confirmation": "6",
+            "withdrawFee": "4",
+            "depositMin": "0.005",
+            "withdrawMin": "10",
+            "chain": "ETH",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "safeConfirmNumber": "64"
+          },
+          {
+            "chainType": "HyperEVM",
+            "confirmation": "30",
+            "withdrawFee": "0",
+            "depositMin": "0",
+            "withdrawMin": "2",
+            "chain": "HYPEREVM",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+            "safeConfirmNumber": "30"
+          },
+          {
+            "chainType": "KAVAEVM",
+            "confirmation": "10",
+            "withdrawFee": "0.3",
+            "depositMin": "0",
+            "withdrawMin": "0.3",
+            "chain": "KAVAEVM",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x919c1c267bc06a7039e03fcc2ef738525769109c",
+            "safeConfirmNumber": "10"
+          },
+          {
+            "chainType": "KAIA",
+            "confirmation": "30",
+            "withdrawFee": "0.5",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "KLAY",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xd077a400968890eacc75cdc901f0356c943e4fdb",
+            "safeConfirmNumber": "120"
+          },
+          {
+            "chainType": "Mantle Network",
+            "confirmation": "100",
+            "withdrawFee": "0",
+            "depositMin": "0",
+            "withdrawMin": "0.3",
+            "chain": "MANTLE",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae",
+            "safeConfirmNumber": "100"
+          },
+          {
+            "chainType": "Polygon PoS",
+            "confirmation": "60",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "MATIC",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+            "safeConfirmNumber": "150"
+          },
+          {
+            "chainType": "OP Mainnet",
+            "confirmation": "30",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "OP",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+            "safeConfirmNumber": "1800"
+          },
+          {
+            "chainType": "SOL",
+            "confirmation": "200",
+            "withdrawFee": "1",
+            "depositMin": "0.005",
+            "withdrawMin": "10",
+            "chain": "SOL",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            "safeConfirmNumber": "200"
+          },
+          {
+            "chainType": "TON",
+            "confirmation": "1",
+            "withdrawFee": "0.3",
+            "depositMin": "0",
+            "withdrawMin": "1",
+            "chain": "TON",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+            "safeConfirmNumber": "1"
+          },
+          {
+            "chainType": "TRX",
+            "confirmation": "20",
+            "withdrawFee": "1",
+            "depositMin": "0",
+            "withdrawMin": "2.6",
+            "chain": "TRX",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+            "safeConfirmNumber": "20"
+          },
+          {
+            "chainType": "zkSync Lite",
+            "confirmation": "",
+            "withdrawFee": "0.3",
+            "depositMin": "",
+            "withdrawMin": "0.3",
+            "chain": "ZKSYNC",
+            "chainDeposit": "0",
+            "chainWithdraw": "0",
+            "minAccuracy": "4",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "safeConfirmNumber": ""
+          }
+        ]
+      },
+      {
+        "name": "XRP",
+        "coin": "XRP",
+        "remainAmount": "13000000",
+        "chains": [
+          {
+            "chainType": "XRP",
+            "confirmation": "1",
+            "withdrawFee": "0.2",
+            "depositMin": "0.01",
+            "withdrawMin": "1.2",
+            "chain": "XRP",
+            "chainDeposit": "1",
+            "chainWithdraw": "1",
+            "minAccuracy": "2",
+            "withdrawPercentageFee": "0",
+            "contractAddress": "",
+            "safeConfirmNumber": "1"
+          }
+        ]
+      }
+    ]
+  }
+}
