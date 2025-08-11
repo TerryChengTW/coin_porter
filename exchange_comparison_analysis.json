@@ -1,0 +1,4055 @@
+{
+  "network_name_mapping": {
+    "ACA": {
+      "binance": {
+        "network_code": "ACA",
+        "name": "Acala",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ACA",
+        "name": "ACA",
+        "domain": ""
+      }
+    },
+    "ADA": {
+      "binance": {
+        "network_code": "ADA",
+        "name": "Cardano",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ADA",
+        "name": "ADA",
+        "domain": ""
+      }
+    },
+    "ALGO": {
+      "binance": {
+        "network_code": "ALGO",
+        "name": "Algorand",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ALGO",
+        "name": "ALGO",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ALGO",
+        "name": "ALGO",
+        "domain": ""
+      }
+    },
+    "AR": {
+      "binance": {
+        "network_code": "AR",
+        "name": "Arweave",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "AR",
+        "name": "AR",
+        "domain": ""
+      }
+    },
+    "ARK": {
+      "binance": {
+        "network_code": "ARK",
+        "name": "Ark",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ARK",
+        "name": "ARK",
+        "domain": ""
+      }
+    },
+    "ATOM": {
+      "binance": {
+        "network_code": "ATOM",
+        "name": "Cosmos",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ATOM",
+        "name": "ATOM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ATOM",
+        "name": "ATOM",
+        "domain": ""
+      }
+    },
+    "AXL": {
+      "binance": {
+        "network_code": "AXL",
+        "name": "Axelar",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "AXL",
+        "name": "AXL",
+        "domain": ""
+      }
+    },
+    "BAND": {
+      "binance": {
+        "network_code": "BAND",
+        "name": "BAND",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BAND",
+        "name": "BAND",
+        "domain": ""
+      }
+    },
+    "BASE": {
+      "binance": {
+        "network_code": "BASE",
+        "name": "Base",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BASE",
+        "name": "BASE",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "BASE",
+        "name": "Base Mainnet",
+        "domain": ""
+      }
+    },
+    "BB": {
+      "binance": {
+        "network_code": "BB",
+        "name": "BounceBit",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BB",
+        "name": "BB",
+        "domain": ""
+      }
+    },
+    "BCH": {
+      "binance": {
+        "network_code": "BCH",
+        "name": "Bitcoin Cash",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BCH",
+        "name": "BCH",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "BCH",
+        "name": "Bitcoin Cash",
+        "domain": ""
+      }
+    },
+    "BERA": {
+      "binance": {
+        "network_code": "BERA",
+        "name": "BERA",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BERA",
+        "name": "BERA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "BERA",
+        "name": "Berachain",
+        "domain": ""
+      }
+    },
+    "BSC": {
+      "binance": {
+        "network_code": "BSC",
+        "name": "BNB Smart Chain (BEP20)",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "BSC",
+        "name": "BSC (BEP20)",
+        "domain": ""
+      }
+    },
+    "BTC": {
+      "binance": {
+        "network_code": "BTC",
+        "name": "Bitcoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "BTC",
+        "name": "BTC",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "BTC",
+        "name": "Bitcoin",
+        "domain": ""
+      }
+    },
+    "CELO": {
+      "binance": {
+        "network_code": "CELO",
+        "name": "CELO",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "CELO",
+        "name": "CELO",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "CELO",
+        "name": "CELO",
+        "domain": ""
+      }
+    },
+    "CFX": {
+      "binance": {
+        "network_code": "CFX",
+        "name": "CFX",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "CFX",
+        "name": "CFX",
+        "domain": ""
+      }
+    },
+    "CKB": {
+      "binance": {
+        "network_code": "CKB",
+        "name": "Nervos Network",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "CKB",
+        "name": "CKB",
+        "domain": ""
+      }
+    },
+    "CMP": {
+      "bitget": {
+        "network_code": "CMP",
+        "name": "CMP",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "CMP",
+        "name": "Caduceus",
+        "domain": ""
+      }
+    },
+    "CSPR": {
+      "bitget": {
+        "network_code": "CSPR",
+        "name": "CSPR",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "CSPR",
+        "name": "Casper",
+        "domain": ""
+      }
+    },
+    "DASH": {
+      "binance": {
+        "network_code": "DASH",
+        "name": "Dash",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "DASH",
+        "name": "DASH",
+        "domain": ""
+      }
+    },
+    "DGB": {
+      "binance": {
+        "network_code": "DGB",
+        "name": "DigiByte",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DGB",
+        "name": "DGB",
+        "domain": ""
+      }
+    },
+    "DOGE": {
+      "binance": {
+        "network_code": "DOGE",
+        "name": "dogecoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "DOGE",
+        "name": "DOGE",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DOGE",
+        "name": "Dogecoin",
+        "domain": ""
+      }
+    },
+    "DOT": {
+      "binance": {
+        "network_code": "DOT",
+        "name": "Polkadot",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "DOT",
+        "name": "DOT",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DOT",
+        "name": "DOT",
+        "domain": ""
+      }
+    },
+    "DYDX": {
+      "binance": {
+        "network_code": "DYDX",
+        "name": "DYDX",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "DYDX",
+        "name": "DYDX",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DYDX",
+        "name": "DYDX",
+        "domain": ""
+      }
+    },
+    "DYM": {
+      "binance": {
+        "network_code": "DYM",
+        "name": "Dymension",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "DYM",
+        "name": "DYM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DYM",
+        "name": "Dymension Chain",
+        "domain": ""
+      }
+    },
+    "DYMEVM": {
+      "bitget": {
+        "network_code": "DYMEVM",
+        "name": "DYMEVM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "DYMEVM",
+        "name": "Dymension EVM",
+        "domain": ""
+      }
+    },
+    "EGLD": {
+      "binance": {
+        "network_code": "EGLD",
+        "name": "MultiversX eGold",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "EGLD",
+        "name": "EGLD",
+        "domain": ""
+      }
+    },
+    "ENJ": {
+      "binance": {
+        "network_code": "ENJ",
+        "name": "Enjin Relay Chain",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ENJ",
+        "name": "ENJ",
+        "domain": ""
+      }
+    },
+    "EOS": {
+      "binance": {
+        "network_code": "EOS",
+        "name": "Vaulta",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "EOS",
+        "name": "EOS",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "EOS",
+        "name": "Vaulta",
+        "domain": ""
+      }
+    },
+    "ETC": {
+      "binance": {
+        "network_code": "ETC",
+        "name": "Ethereum Classic",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ETC",
+        "name": "ETC",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ETC",
+        "name": "Ethereum Classic",
+        "domain": ""
+      }
+    },
+    "ETH": {
+      "binance": {
+        "network_code": "ETH",
+        "name": "Ethereum (ERC20)",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ETH",
+        "name": "ETH",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ETH",
+        "name": "Ethereum ",
+        "domain": ""
+      }
+    },
+    "ETHW": {
+      "binance": {
+        "network_code": "ETHW",
+        "name": "Ethereum (Proof-of-Work)",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ETHW",
+        "name": "ETHW",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ETHW",
+        "name": "ETHW",
+        "domain": ""
+      }
+    },
+    "FET": {
+      "binance": {
+        "network_code": "FET",
+        "name": "Fetch.ai",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "FET",
+        "name": "FET",
+        "domain": ""
+      }
+    },
+    "FIL": {
+      "binance": {
+        "network_code": "FIL",
+        "name": "Filecoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "FIL",
+        "name": "FIL",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "FIL",
+        "name": "Filecoin",
+        "domain": ""
+      }
+    },
+    "FILEVM": {
+      "binance": {
+        "network_code": "FILEVM",
+        "name": "FILEVM",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "FILEVM",
+        "name": "FILEVM",
+        "domain": ""
+      }
+    },
+    "FLOW": {
+      "binance": {
+        "network_code": "FLOW",
+        "name": "Flow",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "FLOW",
+        "name": "FLOW",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "FLOW",
+        "name": "FLOW",
+        "domain": ""
+      }
+    },
+    "FLR": {
+      "binance": {
+        "network_code": "FLR",
+        "name": "FLR",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "FLR",
+        "name": "FLR",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "FLR",
+        "name": "FLR",
+        "domain": ""
+      }
+    },
+    "GLMR": {
+      "binance": {
+        "network_code": "GLMR",
+        "name": "Moonbeam",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "GLMR",
+        "name": "GLMR",
+        "domain": ""
+      }
+    },
+    "HBAR": {
+      "binance": {
+        "network_code": "HBAR",
+        "name": "Hedera Hashgraph",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "HBAR",
+        "name": "HBAR",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "HBAR",
+        "name": "HBAR",
+        "domain": ""
+      }
+    },
+    "HIVE": {
+      "binance": {
+        "network_code": "HIVE",
+        "name": "HIVE",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "HIVE",
+        "name": "HIVE",
+        "domain": ""
+      }
+    },
+    "ICP": {
+      "binance": {
+        "network_code": "ICP",
+        "name": "Internet Computer",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ICP",
+        "name": "ICP",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ICP",
+        "name": "ICP",
+        "domain": ""
+      }
+    },
+    "ICX": {
+      "binance": {
+        "network_code": "ICX",
+        "name": "ICON",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ICX",
+        "name": "ICX",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ICX",
+        "name": "ICX",
+        "domain": ""
+      }
+    },
+    "INIT": {
+      "binance": {
+        "network_code": "INIT",
+        "name": "Initia",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "INIT",
+        "name": "INIT",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "INIT",
+        "name": "Initia",
+        "domain": ""
+      }
+    },
+    "INJ": {
+      "binance": {
+        "network_code": "INJ",
+        "name": "Injective",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "INJ",
+        "name": "INJ",
+        "domain": ""
+      }
+    },
+    "IOST": {
+      "binance": {
+        "network_code": "IOST",
+        "name": "IOST",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "IOST",
+        "name": "IOST",
+        "domain": ""
+      }
+    },
+    "KAVA": {
+      "binance": {
+        "network_code": "KAVA",
+        "name": "KAVA",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "KAVA",
+        "name": "KAVA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "KAVA",
+        "name": "KAVA",
+        "domain": ""
+      }
+    },
+    "KAVAEVM": {
+      "binance": {
+        "network_code": "KAVAEVM",
+        "name": "KAVAEVM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "KAVAEVM",
+        "name": "KAVAEVM",
+        "domain": ""
+      }
+    },
+    "KDA": {
+      "binance": {
+        "network_code": "KDA",
+        "name": "Kadena",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "KDA",
+        "name": "KDA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "KDA",
+        "name": "KDA",
+        "domain": ""
+      }
+    },
+    "KLAY": {
+      "binance": {
+        "network_code": "KLAY",
+        "name": "Klaytn",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "KLAY",
+        "name": "KAIA",
+        "domain": ""
+      }
+    },
+    "KSM": {
+      "binance": {
+        "network_code": "KSM",
+        "name": "Kusama",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "KSM",
+        "name": "KSM",
+        "domain": ""
+      }
+    },
+    "LIGHTNING": {
+      "binance": {
+        "network_code": "LIGHTNING",
+        "name": "Lightning Network",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "LIGHTNING",
+        "name": "LIGHTNING",
+        "domain": ""
+      }
+    },
+    "LINEA": {
+      "bitget": {
+        "network_code": "LINEA",
+        "name": "LINEA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "LINEA",
+        "name": "LINEA",
+        "domain": ""
+      }
+    },
+    "LTC": {
+      "binance": {
+        "network_code": "LTC",
+        "name": "Litecoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "LTC",
+        "name": "LTC",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "LTC",
+        "name": "LTC",
+        "domain": ""
+      }
+    },
+    "LUNA": {
+      "binance": {
+        "network_code": "LUNA",
+        "name": "Terra",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "LUNA",
+        "name": "Terra Classic",
+        "domain": ""
+      }
+    },
+    "MANTA": {
+      "binance": {
+        "network_code": "MANTA",
+        "name": "Manta Network",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MANTA",
+        "name": "Manta Pacific Mainnet",
+        "domain": ""
+      }
+    },
+    "MANTRA": {
+      "binance": {
+        "network_code": "MANTRA",
+        "name": "Mantra Chain",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MANTRA",
+        "name": "MANTRA",
+        "domain": ""
+      }
+    },
+    "MATIC": {
+      "binance": {
+        "network_code": "MATIC",
+        "name": "Polygon POS",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MATIC",
+        "name": "Polygon PoS",
+        "domain": ""
+      }
+    },
+    "MERLIN": {
+      "bitget": {
+        "network_code": "MERLIN",
+        "name": "MERLIN",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MERLIN",
+        "name": "Merlin Chain",
+        "domain": ""
+      }
+    },
+    "MINA": {
+      "binance": {
+        "network_code": "MINA",
+        "name": "Mina",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "MINA",
+        "name": "MINA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MINA",
+        "name": "MINA",
+        "domain": ""
+      }
+    },
+    "MODE": {
+      "bitget": {
+        "network_code": "MODE",
+        "name": "MODE",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MODE",
+        "name": "MODE",
+        "domain": ""
+      }
+    },
+    "MOVE": {
+      "binance": {
+        "network_code": "MOVE",
+        "name": "Movement",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "MOVE",
+        "name": "MOVE",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MOVE",
+        "name": "Movement Network",
+        "domain": ""
+      }
+    },
+    "MOVR": {
+      "binance": {
+        "network_code": "MOVR",
+        "name": "Moonriver",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "MOVR",
+        "name": "MOVR",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "MOVR",
+        "name": "MOVR",
+        "domain": ""
+      }
+    },
+    "NANO": {
+      "binance": {
+        "network_code": "NANO",
+        "name": "NANO",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "NANO",
+        "name": "NANO",
+        "domain": ""
+      }
+    },
+    "NEAR": {
+      "binance": {
+        "network_code": "NEAR",
+        "name": "NEAR Protocol",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "NEAR",
+        "name": "NEAR",
+        "domain": ""
+      }
+    },
+    "NEM": {
+      "bitget": {
+        "network_code": "NEM",
+        "name": "NEM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "NEM",
+        "name": "NEM",
+        "domain": ""
+      }
+    },
+    "NEO3": {
+      "binance": {
+        "network_code": "NEO3",
+        "name": "NEO N3",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "NEO3",
+        "name": "NEO3",
+        "domain": ""
+      }
+    },
+    "NULS": {
+      "binance": {
+        "network_code": "NULS",
+        "name": "Nuls",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "NULS",
+        "name": "NULS",
+        "domain": ""
+      }
+    },
+    "ONE": {
+      "binance": {
+        "network_code": "ONE",
+        "name": "Harmony",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ONE",
+        "name": "ONE",
+        "domain": ""
+      }
+    },
+    "OPTIMISM": {
+      "binance": {
+        "network_code": "OPTIMISM",
+        "name": "Optimism",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "OPTIMISM",
+        "name": "OPTIMISM",
+        "domain": ""
+      }
+    },
+    "QTUM": {
+      "binance": {
+        "network_code": "QTUM",
+        "name": "Qtum",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "QTUM",
+        "name": "QTUM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "QTUM",
+        "name": "QTUM",
+        "domain": ""
+      }
+    },
+    "REEF": {
+      "binance": {
+        "network_code": "REEF",
+        "name": "Reef",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "REEF",
+        "name": "REEF",
+        "domain": ""
+      }
+    },
+    "ROSE": {
+      "binance": {
+        "network_code": "ROSE",
+        "name": "Oasis Network",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ROSE",
+        "name": "ROSE",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ROSE",
+        "name": "ROSE",
+        "domain": ""
+      }
+    },
+    "RSK": {
+      "binance": {
+        "network_code": "RSK",
+        "name": "RSK",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "RSK",
+        "name": "RSK",
+        "domain": ""
+      }
+    },
+    "RUNE": {
+      "binance": {
+        "network_code": "RUNE",
+        "name": "THORChain",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "RUNE",
+        "name": "THORChain",
+        "domain": ""
+      }
+    },
+    "RVN": {
+      "binance": {
+        "network_code": "RVN",
+        "name": "Ravencoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "RVN",
+        "name": "RVN",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "RVN",
+        "name": "RVN",
+        "domain": ""
+      }
+    },
+    "SAGA": {
+      "binance": {
+        "network_code": "SAGA",
+        "name": "Saga",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SAGA",
+        "name": "SAGA",
+        "domain": ""
+      }
+    },
+    "SC": {
+      "binance": {
+        "network_code": "SC",
+        "name": "Siacoin",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SC",
+        "name": "Siacoin",
+        "domain": ""
+      }
+    },
+    "SCROLL": {
+      "binance": {
+        "network_code": "SCROLL",
+        "name": "Scroll",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SCROLL",
+        "name": "SCROLL",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SCROLL",
+        "name": "Scroll",
+        "domain": ""
+      }
+    },
+    "SCRT": {
+      "binance": {
+        "network_code": "SCRT",
+        "name": "Secret",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SCRT",
+        "name": "SCRT",
+        "domain": ""
+      }
+    },
+    "SEI": {
+      "binance": {
+        "network_code": "SEI",
+        "name": "SEI",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SEI",
+        "name": "SEI",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SEI",
+        "name": "SEI",
+        "domain": ""
+      }
+    },
+    "SEIEVM": {
+      "binance": {
+        "network_code": "SEIEVM",
+        "name": "SEIEVM",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SEIEVM",
+        "name": "SEIEVM",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SEIEVM",
+        "name": "SEIEVM",
+        "domain": ""
+      }
+    },
+    "SLF": {
+      "binance": {
+        "network_code": "SLF",
+        "name": "Self Chain",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SLF",
+        "name": "SLF",
+        "domain": ""
+      }
+    },
+    "SOL": {
+      "binance": {
+        "network_code": "SOL",
+        "name": "Solana",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SOL",
+        "name": "SOL",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SOL",
+        "name": "Solana",
+        "domain": ""
+      }
+    },
+    "SONIC": {
+      "binance": {
+        "network_code": "SONIC",
+        "name": "Sonic Network",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SONIC",
+        "name": "SONIC",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SONIC",
+        "name": "Sonic",
+        "domain": ""
+      }
+    },
+    "STARKNET": {
+      "binance": {
+        "network_code": "STARKNET",
+        "name": "Starknet",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "STARKNET",
+        "name": "Starknet",
+        "domain": ""
+      }
+    },
+    "STORY": {
+      "bitget": {
+        "network_code": "STORY",
+        "name": "STORY",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "STORY",
+        "name": "STORY",
+        "domain": ""
+      }
+    },
+    "STX": {
+      "binance": {
+        "network_code": "STX",
+        "name": "Stacks",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "STX",
+        "name": "Stacks",
+        "domain": ""
+      }
+    },
+    "SUI": {
+      "binance": {
+        "network_code": "SUI",
+        "name": "Sui",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SUI",
+        "name": "SUI",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "SUI",
+        "name": "SUI",
+        "domain": ""
+      }
+    },
+    "SYS": {
+      "binance": {
+        "network_code": "SYS",
+        "name": "Syscoin",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "SYS",
+        "name": "SYS",
+        "domain": ""
+      }
+    },
+    "TAIKO": {
+      "bitget": {
+        "network_code": "TAIKO",
+        "name": "TAIKO",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "TAIKO",
+        "name": "Taiko Chain",
+        "domain": ""
+      }
+    },
+    "TAO": {
+      "binance": {
+        "network_code": "TAO",
+        "name": "Bittensor",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "TAO",
+        "name": "TAO",
+        "domain": ""
+      }
+    },
+    "THETA": {
+      "binance": {
+        "network_code": "THETA",
+        "name": "Theta Token",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "THETA",
+        "name": "THETA",
+        "domain": ""
+      }
+    },
+    "TON": {
+      "binance": {
+        "network_code": "TON",
+        "name": "The Open Network",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "TON",
+        "name": "TON",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "TON",
+        "name": "Ton",
+        "domain": ""
+      }
+    },
+    "TRX": {
+      "binance": {
+        "network_code": "TRX",
+        "name": "Tron (TRC20)",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "TRX",
+        "name": "TRX",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "TRX",
+        "name": "TRX",
+        "domain": ""
+      }
+    },
+    "VANA": {
+      "binance": {
+        "network_code": "VANA",
+        "name": "VANA",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "VANA",
+        "name": "VANA",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "VANA",
+        "name": "VANA",
+        "domain": ""
+      }
+    },
+    "VET": {
+      "binance": {
+        "network_code": "VET",
+        "name": "VeChain",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "VET",
+        "name": "VET",
+        "domain": ""
+      }
+    },
+    "VIC": {
+      "binance": {
+        "network_code": "VIC",
+        "name": "Viction",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "VIC",
+        "name": "Viction",
+        "domain": ""
+      }
+    },
+    "VITE": {
+      "binance": {
+        "network_code": "VITE",
+        "name": "VITE",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "VITE",
+        "name": "VITE",
+        "domain": ""
+      }
+    },
+    "WAVES": {
+      "binance": {
+        "network_code": "WAVES",
+        "name": "Waves",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "WAVES",
+        "name": "WAVES",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "WAVES",
+        "name": "Waves",
+        "domain": ""
+      }
+    },
+    "WAXP": {
+      "bitget": {
+        "network_code": "WAXP",
+        "name": "WAXP",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "WAXP",
+        "name": "WAX",
+        "domain": ""
+      }
+    },
+    "WLD": {
+      "binance": {
+        "network_code": "WLD",
+        "name": "World Chain",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "WLD",
+        "name": "WLD",
+        "domain": ""
+      }
+    },
+    "XAI": {
+      "binance": {
+        "network_code": "XAI",
+        "name": "Xai chain",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XAI",
+        "name": "XAI",
+        "domain": ""
+      }
+    },
+    "XEC": {
+      "binance": {
+        "network_code": "XEC",
+        "name": "eCash",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XEC",
+        "name": "XEC",
+        "domain": ""
+      }
+    },
+    "XION": {
+      "bitget": {
+        "network_code": "XION",
+        "name": "XION",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XION",
+        "name": "XION",
+        "domain": ""
+      }
+    },
+    "XLM": {
+      "binance": {
+        "network_code": "XLM",
+        "name": "Stellar Network",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XLM",
+        "name": "XLM",
+        "domain": ""
+      }
+    },
+    "XRP": {
+      "binance": {
+        "network_code": "XRP",
+        "name": "XRP Ledger",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "XRP",
+        "name": "XRP",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XRP",
+        "name": "XRP",
+        "domain": ""
+      }
+    },
+    "XTZ": {
+      "binance": {
+        "network_code": "XTZ",
+        "name": "Tezos",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "XTZ",
+        "name": "XTZ",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "XTZ",
+        "name": "tezos",
+        "domain": ""
+      }
+    },
+    "ZIL": {
+      "binance": {
+        "network_code": "ZIL",
+        "name": "Zilliqa",
+        "domain": ""
+      },
+      "bitget": {
+        "network_code": "ZIL",
+        "name": "ZIL",
+        "domain": ""
+      },
+      "bybit": {
+        "network_code": "ZIL",
+        "name": "ZIL",
+        "domain": ""
+      }
+    }
+  },
+  "explorer_domains": {},
+  "cross_exchange_analysis": [
+    {
+      "network_code": "ACA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ACA",
+          "name": "Acala",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ACA",
+          "name": "ACA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ADA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ADA",
+          "name": "Cardano",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ADA",
+          "name": "ADA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ALGO",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ALGO",
+          "name": "Algorand",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ALGO",
+          "name": "ALGO",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ALGO",
+          "name": "ALGO",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "AR",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "AR",
+          "name": "Arweave",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "AR",
+          "name": "AR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ARK",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ARK",
+          "name": "Ark",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ARK",
+          "name": "ARK",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ATOM",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ATOM",
+          "name": "Cosmos",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ATOM",
+          "name": "ATOM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ATOM",
+          "name": "ATOM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "AXL",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "AXL",
+          "name": "Axelar",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "AXL",
+          "name": "AXL",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BAND",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BAND",
+          "name": "BAND",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BAND",
+          "name": "BAND",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BASE",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BASE",
+          "name": "Base",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BASE",
+          "name": "BASE",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "BASE",
+          "name": "Base Mainnet",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BB",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BB",
+          "name": "BounceBit",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BB",
+          "name": "BB",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BCH",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BCH",
+          "name": "Bitcoin Cash",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BCH",
+          "name": "BCH",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "BCH",
+          "name": "Bitcoin Cash",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BERA",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BERA",
+          "name": "BERA",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BERA",
+          "name": "BERA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "BERA",
+          "name": "Berachain",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BSC",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BSC",
+          "name": "BNB Smart Chain (BEP20)",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "BSC",
+          "name": "BSC (BEP20)",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "BTC",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "BTC",
+          "name": "Bitcoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "BTC",
+          "name": "BTC",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "BTC",
+          "name": "Bitcoin",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "CELO",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "CELO",
+          "name": "CELO",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "CELO",
+          "name": "CELO",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "CELO",
+          "name": "CELO",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "CFX",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "CFX",
+          "name": "CFX",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "CFX",
+          "name": "CFX",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "CKB",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "CKB",
+          "name": "Nervos Network",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "CKB",
+          "name": "CKB",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "CMP",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "CMP",
+          "name": "CMP",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "CMP",
+          "name": "Caduceus",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "CSPR",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "CSPR",
+          "name": "CSPR",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "CSPR",
+          "name": "Casper",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DASH",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DASH",
+          "name": "Dash",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "DASH",
+          "name": "DASH",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DGB",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DGB",
+          "name": "DigiByte",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DGB",
+          "name": "DGB",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DOGE",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DOGE",
+          "name": "dogecoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "DOGE",
+          "name": "DOGE",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DOGE",
+          "name": "Dogecoin",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DOT",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DOT",
+          "name": "Polkadot",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "DOT",
+          "name": "DOT",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DOT",
+          "name": "DOT",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DYDX",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DYDX",
+          "name": "DYDX",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "DYDX",
+          "name": "DYDX",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DYDX",
+          "name": "DYDX",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DYM",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "DYM",
+          "name": "Dymension",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "DYM",
+          "name": "DYM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DYM",
+          "name": "Dymension Chain",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "DYMEVM",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "DYMEVM",
+          "name": "DYMEVM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "DYMEVM",
+          "name": "Dymension EVM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "EGLD",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "EGLD",
+          "name": "MultiversX eGold",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "EGLD",
+          "name": "EGLD",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ENJ",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ENJ",
+          "name": "Enjin Relay Chain",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ENJ",
+          "name": "ENJ",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "EOS",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "EOS",
+          "name": "Vaulta",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "EOS",
+          "name": "EOS",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "EOS",
+          "name": "Vaulta",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ETC",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ETC",
+          "name": "Ethereum Classic",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ETC",
+          "name": "ETC",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ETC",
+          "name": "Ethereum Classic",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ETH",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ETH",
+          "name": "Ethereum (ERC20)",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ETH",
+          "name": "ETH",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ETH",
+          "name": "Ethereum ",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ETHW",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ETHW",
+          "name": "Ethereum (Proof-of-Work)",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ETHW",
+          "name": "ETHW",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ETHW",
+          "name": "ETHW",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "FET",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "FET",
+          "name": "Fetch.ai",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "FET",
+          "name": "FET",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "FIL",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "FIL",
+          "name": "Filecoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "FIL",
+          "name": "FIL",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "FIL",
+          "name": "Filecoin",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "FILEVM",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "FILEVM",
+          "name": "FILEVM",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "FILEVM",
+          "name": "FILEVM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "FLOW",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "FLOW",
+          "name": "Flow",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "FLOW",
+          "name": "FLOW",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "FLOW",
+          "name": "FLOW",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "FLR",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "FLR",
+          "name": "FLR",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "FLR",
+          "name": "FLR",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "FLR",
+          "name": "FLR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "GLMR",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "GLMR",
+          "name": "Moonbeam",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "GLMR",
+          "name": "GLMR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "HBAR",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "HBAR",
+          "name": "Hedera Hashgraph",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "HBAR",
+          "name": "HBAR",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "HBAR",
+          "name": "HBAR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "HIVE",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "HIVE",
+          "name": "HIVE",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "HIVE",
+          "name": "HIVE",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ICP",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ICP",
+          "name": "Internet Computer",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ICP",
+          "name": "ICP",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ICP",
+          "name": "ICP",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ICX",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ICX",
+          "name": "ICON",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ICX",
+          "name": "ICX",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ICX",
+          "name": "ICX",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "INIT",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "INIT",
+          "name": "Initia",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "INIT",
+          "name": "INIT",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "INIT",
+          "name": "Initia",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "INJ",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "INJ",
+          "name": "Injective",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "INJ",
+          "name": "INJ",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "IOST",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "IOST",
+          "name": "IOST",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "IOST",
+          "name": "IOST",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "KAVA",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "KAVA",
+          "name": "KAVA",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "KAVA",
+          "name": "KAVA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "KAVA",
+          "name": "KAVA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "KAVAEVM",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "KAVAEVM",
+          "name": "KAVAEVM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "KAVAEVM",
+          "name": "KAVAEVM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "KDA",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "KDA",
+          "name": "Kadena",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "KDA",
+          "name": "KDA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "KDA",
+          "name": "KDA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "KLAY",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "KLAY",
+          "name": "Klaytn",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "KLAY",
+          "name": "KAIA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "KSM",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "KSM",
+          "name": "Kusama",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "KSM",
+          "name": "KSM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "LIGHTNING",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "LIGHTNING",
+          "name": "Lightning Network",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "LIGHTNING",
+          "name": "LIGHTNING",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "LINEA",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "LINEA",
+          "name": "LINEA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "LINEA",
+          "name": "LINEA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "LTC",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "LTC",
+          "name": "Litecoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "LTC",
+          "name": "LTC",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "LTC",
+          "name": "LTC",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "LUNA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "LUNA",
+          "name": "Terra",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "LUNA",
+          "name": "Terra Classic",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MANTA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MANTA",
+          "name": "Manta Network",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MANTA",
+          "name": "Manta Pacific Mainnet",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MANTRA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MANTRA",
+          "name": "Mantra Chain",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MANTRA",
+          "name": "MANTRA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MATIC",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MATIC",
+          "name": "Polygon POS",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MATIC",
+          "name": "Polygon PoS",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MERLIN",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "MERLIN",
+          "name": "MERLIN",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MERLIN",
+          "name": "Merlin Chain",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MINA",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MINA",
+          "name": "Mina",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "MINA",
+          "name": "MINA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MINA",
+          "name": "MINA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MODE",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "MODE",
+          "name": "MODE",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MODE",
+          "name": "MODE",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MOVE",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MOVE",
+          "name": "Movement",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "MOVE",
+          "name": "MOVE",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MOVE",
+          "name": "Movement Network",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "MOVR",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "MOVR",
+          "name": "Moonriver",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "MOVR",
+          "name": "MOVR",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "MOVR",
+          "name": "MOVR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "NANO",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "NANO",
+          "name": "NANO",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "NANO",
+          "name": "NANO",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "NEAR",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "NEAR",
+          "name": "NEAR Protocol",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "NEAR",
+          "name": "NEAR",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "NEM",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "NEM",
+          "name": "NEM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "NEM",
+          "name": "NEM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "NEO3",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "NEO3",
+          "name": "NEO N3",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "NEO3",
+          "name": "NEO3",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "NULS",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "NULS",
+          "name": "Nuls",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "NULS",
+          "name": "NULS",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ONE",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ONE",
+          "name": "Harmony",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ONE",
+          "name": "ONE",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "OPTIMISM",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "OPTIMISM",
+          "name": "Optimism",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "OPTIMISM",
+          "name": "OPTIMISM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "QTUM",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "QTUM",
+          "name": "Qtum",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "QTUM",
+          "name": "QTUM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "QTUM",
+          "name": "QTUM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "REEF",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "REEF",
+          "name": "Reef",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "REEF",
+          "name": "REEF",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ROSE",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ROSE",
+          "name": "Oasis Network",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ROSE",
+          "name": "ROSE",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ROSE",
+          "name": "ROSE",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "RSK",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "RSK",
+          "name": "RSK",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "RSK",
+          "name": "RSK",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "RUNE",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "RUNE",
+          "name": "THORChain",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "RUNE",
+          "name": "THORChain",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "RVN",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "RVN",
+          "name": "Ravencoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "RVN",
+          "name": "RVN",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "RVN",
+          "name": "RVN",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SAGA",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SAGA",
+          "name": "Saga",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SAGA",
+          "name": "SAGA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SC",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SC",
+          "name": "Siacoin",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SC",
+          "name": "Siacoin",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SCROLL",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SCROLL",
+          "name": "Scroll",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SCROLL",
+          "name": "SCROLL",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SCROLL",
+          "name": "Scroll",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SCRT",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SCRT",
+          "name": "Secret",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SCRT",
+          "name": "SCRT",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SEI",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SEI",
+          "name": "SEI",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SEI",
+          "name": "SEI",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SEI",
+          "name": "SEI",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SEIEVM",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SEIEVM",
+          "name": "SEIEVM",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SEIEVM",
+          "name": "SEIEVM",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SEIEVM",
+          "name": "SEIEVM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SLF",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SLF",
+          "name": "Self Chain",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SLF",
+          "name": "SLF",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SOL",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SOL",
+          "name": "Solana",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SOL",
+          "name": "SOL",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SOL",
+          "name": "Solana",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SONIC",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SONIC",
+          "name": "Sonic Network",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SONIC",
+          "name": "SONIC",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SONIC",
+          "name": "Sonic",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "STARKNET",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "STARKNET",
+          "name": "Starknet",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "STARKNET",
+          "name": "Starknet",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "STORY",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "STORY",
+          "name": "STORY",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "STORY",
+          "name": "STORY",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "STX",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "STX",
+          "name": "Stacks",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "STX",
+          "name": "Stacks",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SUI",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SUI",
+          "name": "Sui",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SUI",
+          "name": "SUI",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "SUI",
+          "name": "SUI",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "SYS",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "SYS",
+          "name": "Syscoin",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "SYS",
+          "name": "SYS",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "TAIKO",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "TAIKO",
+          "name": "TAIKO",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "TAIKO",
+          "name": "Taiko Chain",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "TAO",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "TAO",
+          "name": "Bittensor",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "TAO",
+          "name": "TAO",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "THETA",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "THETA",
+          "name": "Theta Token",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "THETA",
+          "name": "THETA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "TON",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "TON",
+          "name": "The Open Network",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "TON",
+          "name": "TON",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "TON",
+          "name": "Ton",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "TRX",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "TRX",
+          "name": "Tron (TRC20)",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "TRX",
+          "name": "TRX",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "TRX",
+          "name": "TRX",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "VANA",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "VANA",
+          "name": "VANA",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "VANA",
+          "name": "VANA",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "VANA",
+          "name": "VANA",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "VET",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "VET",
+          "name": "VeChain",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "VET",
+          "name": "VET",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "VIC",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "VIC",
+          "name": "Viction",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "VIC",
+          "name": "Viction",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "VITE",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "VITE",
+          "name": "VITE",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "VITE",
+          "name": "VITE",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "WAVES",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "WAVES",
+          "name": "Waves",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "WAVES",
+          "name": "WAVES",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "WAVES",
+          "name": "Waves",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "WAXP",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "WAXP",
+          "name": "WAXP",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "WAXP",
+          "name": "WAX",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "WLD",
+      "exchanges": [
+        "binance",
+        "bitget"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "WLD",
+          "name": "World Chain",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "WLD",
+          "name": "WLD",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XAI",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "XAI",
+          "name": "Xai chain",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XAI",
+          "name": "XAI",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XEC",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "XEC",
+          "name": "eCash",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XEC",
+          "name": "XEC",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XION",
+      "exchanges": [
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": true,
+      "domain_consistency": true,
+      "details": {
+        "bitget": {
+          "network_code": "XION",
+          "name": "XION",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XION",
+          "name": "XION",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XLM",
+      "exchanges": [
+        "binance",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "XLM",
+          "name": "Stellar Network",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XLM",
+          "name": "XLM",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XRP",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "XRP",
+          "name": "XRP Ledger",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "XRP",
+          "name": "XRP",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XRP",
+          "name": "XRP",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "XTZ",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "XTZ",
+          "name": "Tezos",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "XTZ",
+          "name": "XTZ",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "XTZ",
+          "name": "tezos",
+          "domain": ""
+        }
+      }
+    },
+    {
+      "network_code": "ZIL",
+      "exchanges": [
+        "binance",
+        "bitget",
+        "bybit"
+      ],
+      "name_consistency": false,
+      "domain_consistency": true,
+      "details": {
+        "binance": {
+          "network_code": "ZIL",
+          "name": "Zilliqa",
+          "domain": ""
+        },
+        "bitget": {
+          "network_code": "ZIL",
+          "name": "ZIL",
+          "domain": ""
+        },
+        "bybit": {
+          "network_code": "ZIL",
+          "name": "ZIL",
+          "domain": ""
+        }
+      }
+    }
+  ]
+}
