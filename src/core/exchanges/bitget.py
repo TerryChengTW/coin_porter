@@ -1,6 +1,6 @@
 import asyncio
 from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
+from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig
 
 try:
     import sys
@@ -118,6 +118,59 @@ class BitgetExchange(BaseExchange):
             
         except Exception as e:
             raise Exception(f"Bitget network query failed: {str(e)}")
+    
+    async def get_all_coins_info(self) -> List[CoinInfo]:
+        """獲取所有幣種的完整資訊"""
+        self._ensure_auth()
+        
+        if not self._private_client:
+            raise Exception("Bitget client not available")
+        
+        try:
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None, 
+                lambda: self._private_client.public_coins({})  # 空參數獲取所有幣種
+            )
+            
+            if response.get('code') != '00000':
+                raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
+            
+            coins = []
+            for coin_info in response.get('data', []):
+                symbol = coin_info.get('coin', '')
+                if not symbol:
+                    continue
+                
+                # 解析網路資訊
+                networks = []
+                for chain_info in coin_info.get('chains', []):
+                    networks.append(NetworkInfo(
+                        network=chain_info.get('chain', ''),
+                        min_withdrawal=float(chain_info.get('minWithdrawAmount', 0)),
+                        withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
+                        deposit_enabled=chain_info.get('rechargeable') == 'true',
+                        withdrawal_enabled=chain_info.get('withdrawable') == 'true',
+                        contract_address=chain_info.get('contractAddress'),
+                        network_full_name=chain_info.get('chain', ''),
+                        browser_url=chain_info.get('browserUrl')
+                    ))
+                
+                # 創建 CoinInfo
+                coin = CoinInfo(
+                    symbol=symbol,
+                    full_name=symbol,  # Bitget 沒有提供完整名稱
+                    trading_enabled=coin_info.get('transfer', 'true') == 'true',
+                    deposit_all_enabled=any(chain.get('rechargeable') == 'true' for chain in coin_info.get('chains', [])),
+                    withdrawal_all_enabled=any(chain.get('withdrawable') == 'true' for chain in coin_info.get('chains', [])),
+                    networks=networks
+                )
+                coins.append(coin)
+            
+            return coins
+            
+        except Exception as e:
+            raise Exception(f"Bitget 查詢所有幣種資訊失敗: {str(e)}")
     
     async def get_deposit_address(self, currency: str, network: str) -> str:
         """獲取入金地址"""

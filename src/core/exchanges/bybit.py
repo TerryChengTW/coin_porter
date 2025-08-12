@@ -1,6 +1,6 @@
 import asyncio
 from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
+from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig
 
 try:
     from pybit.unified_trading import HTTP
@@ -88,6 +88,63 @@ class BybitExchange(BaseExchange):
             
         except Exception as e:
             raise Exception(f"Bybit 查詢幣種網路資訊失敗: {str(e)}")
+    
+    async def get_all_coins_info(self) -> List[CoinInfo]:
+        """獲取所有幣種的完整資訊"""
+        self._ensure_auth()
+        
+        try:
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None, 
+                lambda: self._client.get_coin_info()  # 無參數版本，獲取所有幣種
+            )
+            
+            if response.get('retCode') != 0:
+                raise Exception(f"Bybit API 錯誤: {response.get('retMsg', 'Unknown error')}")
+            
+            coins = []
+            for row in response.get('result', {}).get('rows', []):
+                symbol = row.get('coin', '')
+                if not symbol:
+                    continue
+                
+                # 解析網路資訊
+                networks = []
+                for chain_info in row.get('chains', []):
+                    # 安全轉換數值，處理空字串
+                    withdraw_min_str = chain_info.get('withdrawMin', '')
+                    withdraw_fee_str = chain_info.get('withdrawFee', '')
+                    
+                    # 如果 withdrawFee 為空，表示該幣不支持提現
+                    withdrawal_fee_available = bool(withdraw_fee_str and withdraw_fee_str.strip())
+                    
+                    networks.append(NetworkInfo(
+                        network=chain_info.get('chain', ''),
+                        min_withdrawal=float(withdraw_min_str) if withdraw_min_str and withdraw_min_str.strip() else 0.0,
+                        withdrawal_fee=float(withdraw_fee_str) if withdrawal_fee_available else -1.0,  # -1 表示不支援提現
+                        deposit_enabled=chain_info.get('chainDeposit') == '1',
+                        withdrawal_enabled=withdrawal_fee_available and chain_info.get('chainWithdraw') == '1',
+                        contract_address=chain_info.get('contractAddress') if chain_info.get('contractAddress') else None,
+                        network_full_name=chain_info.get('chainType', chain_info.get('chain', '')),  # 使用 chainType 作為完整名稱
+                        browser_url=None  # Bybit 沒有提供這個資訊
+                    ))
+                
+                # 創建 CoinInfo
+                coin = CoinInfo(
+                    symbol=symbol,
+                    full_name=row.get('name', symbol),
+                    trading_enabled=True,  # Bybit 沒有明確指出，假設支援
+                    deposit_all_enabled=any(chain.get('chainDeposit') == '1' for chain in row.get('chains', [])),
+                    withdrawal_all_enabled=any(chain.get('chainWithdraw') == '1' for chain in row.get('chains', [])),
+                    networks=networks
+                )
+                coins.append(coin)
+            
+            return coins
+            
+        except Exception as e:
+            raise Exception(f"Bybit 查詢所有幣種資訊失敗: {str(e)}")
     
     async def get_deposit_address(self, currency: str, network: str) -> str:
         """獲取入金地址"""

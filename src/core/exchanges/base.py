@@ -17,6 +17,17 @@ class NetworkInfo:
 
 
 @dataclass
+class CoinInfo:
+    """幣種完整資訊"""
+    symbol: str                        # 幣種符號
+    full_name: str                     # 完整名稱
+    trading_enabled: bool              # 是否支援交易
+    deposit_all_enabled: bool          # 是否支援所有網路入金
+    withdrawal_all_enabled: bool       # 是否支援所有網路出金
+    networks: List[NetworkInfo]        # 支援的網路列表
+
+
+@dataclass
 class TransferResult:
     """轉帳結果"""
     transfer_id: str
@@ -51,6 +62,18 @@ class BaseExchange(ABC):
     @abstractmethod
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊"""
+        pass
+    
+    @abstractmethod
+    async def get_all_coins_info(self) -> List[CoinInfo]:
+        """獲取所有幣種的完整資訊（包含所有網路）
+        
+        這個方法應該返回交易所支援的所有幣種及其網路資訊，
+        相當於一次性獲取所有資料，而不需要逐個查詢特定幣種。
+        
+        Returns:
+            List[CoinInfo]: 所有幣種的完整資訊列表
+        """
         pass
     
     # 私有端點 - 需認證

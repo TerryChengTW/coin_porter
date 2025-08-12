@@ -1,6 +1,6 @@
 import asyncio
 from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
+from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig
 
 try:
     from binance_common.configuration import ConfigurationRestAPI
@@ -101,6 +101,56 @@ class BinanceExchange(BaseExchange):
             
         except Exception as e:
             raise Exception(f"Binance 查詢幣種網路資訊失敗: {str(e)}")
+    
+    async def get_all_coins_info(self) -> List[CoinInfo]:
+        """獲取所有幣種的完整資訊"""
+        self._ensure_auth()
+        
+        try:
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None, 
+                lambda: self._client.rest_api.all_coins_information()
+            )
+            
+            data = response.data()
+            coins = []
+            
+            for coin_info in data:
+                symbol = getattr(coin_info, 'coin', '')
+                if not symbol:
+                    continue
+                    
+                # 解析網路資訊
+                networks = []
+                network_list = getattr(coin_info, 'network_list', [])
+                for network_info in network_list:
+                    networks.append(NetworkInfo(
+                        network=getattr(network_info, 'network', ''),
+                        min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
+                        withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
+                        deposit_enabled=getattr(network_info, 'deposit_enable', False),
+                        withdrawal_enabled=getattr(network_info, 'withdraw_enable', False),
+                        contract_address=getattr(network_info, 'contract_address', None),
+                        network_full_name=getattr(network_info, 'name', None),
+                        browser_url=getattr(network_info, 'contract_address_url', None)
+                    ))
+                
+                # 創建 CoinInfo
+                coin = CoinInfo(
+                    symbol=symbol,
+                    full_name=getattr(coin_info, 'name', symbol),
+                    trading_enabled=getattr(coin_info, 'trading', False),
+                    deposit_all_enabled=getattr(coin_info, 'deposit_all_enable', False),
+                    withdrawal_all_enabled=getattr(coin_info, 'withdraw_all_enable', False),
+                    networks=networks
+                )
+                coins.append(coin)
+            
+            return coins
+            
+        except Exception as e:
+            raise Exception(f"Binance 查詢所有幣種資訊失敗: {str(e)}")
     
     async def get_deposit_address(self, currency: str, network: str) -> str:
         """獲取入金地址"""
