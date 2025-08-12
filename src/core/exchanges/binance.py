@@ -90,7 +90,10 @@ class BinanceExchange(BaseExchange):
                             min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
                             withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
                             deposit_enabled=getattr(network_info, 'deposit_enable', False),
-                            withdrawal_enabled=getattr(network_info, 'withdraw_enable', False)
+                            withdrawal_enabled=getattr(network_info, 'withdraw_enable', False),
+                            contract_address=getattr(network_info, 'contract_address', None),
+                            network_full_name=getattr(network_info, 'name', None),
+                            browser_url=getattr(network_info, 'contract_address_url', None)
                         ))
                     return networks
             

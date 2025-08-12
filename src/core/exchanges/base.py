@@ -11,6 +11,9 @@ class NetworkInfo:
     withdrawal_fee: float
     deposit_enabled: bool
     withdrawal_enabled: bool
+    contract_address: Optional[str] = None
+    network_full_name: Optional[str] = None  # 完整網路名稱
+    browser_url: Optional[str] = None        # 區塊鏈瀏覽器URL
 
 
 @dataclass

@@ -7,13 +7,44 @@ from PySide6.QtWidgets import (
     QGroupBox, QProgressBar, QTabWidget, QTableWidget,
     QTableWidgetItem, QHeaderView
 )
-from PySide6.QtCore import Qt, QThread, Signal, QTimer
+from PySide6.QtCore import Qt, QThread, Signal, QTimer, Slot, QObject
 from PySide6.QtGui import QFont, QIcon
 
 from ..core.exchanges.manager import ExchangeManager
 from ..core.config.api_keys import APIKeyManager
 from ..core.config.exchanges_config import ExchangeConfigManager
 from ..core.exchanges.base import NetworkInfo
+from ..core.currency.coin_identifier import CoinIdentificationResult
+
+
+class EnhancedQueryWorker(QObject):
+    """增強查詢工作器"""
+    finished = Signal(object)  # CoinIdentificationResult
+    error = Signal(str)  # 錯誤信息
+    
+    def __init__(self, exchange_manager, currency):
+        super().__init__()
+        self.exchange_manager = exchange_manager
+        self.currency = currency
+    
+    def run(self):
+        """執行查詢"""
+        try:
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            result = loop.run_until_complete(
+                self.exchange_manager.enhanced_currency_query(self.currency)
+            )
+            
+            loop.close()
+            self.finished.emit(result)
+            
+        except Exception as e:
+            import traceback
+            error_msg = f"智能識別失敗: {str(e)}\n{traceback.format_exc()}"
+            self.error.emit(error_msg)
 
 
 class QueryWorker(QThread):
@@ -135,8 +166,10 @@ class MainWindow(QMainWindow):
         # 查詢按鈕
         self.query_currencies_btn = QPushButton("查詢支援幣種")
         self.query_networks_btn = QPushButton("查詢網路資訊")
+        self.enhanced_query_btn = QPushButton("智能幣種識別")
         control_layout.addWidget(self.query_currencies_btn)
         control_layout.addWidget(self.query_networks_btn)
+        control_layout.addWidget(self.enhanced_query_btn)
         
         control_layout.addStretch()
         layout.addWidget(control_group)
@@ -148,9 +181,9 @@ class MainWindow(QMainWindow):
         
         # 結果顯示
         self.results_table = QTableWidget()
-        self.results_table.setColumnCount(6)
+        self.results_table.setColumnCount(8)
         self.results_table.setHorizontalHeaderLabels([
-            "交易所", "幣種", "網路", "最小出金", "手續費", "狀態"
+            "交易所", "幣種", "網路", "最小出金", "手續費", "狀態", "合約地址", "類型"
         ])
         
         # 設定表格樣式
@@ -219,6 +252,7 @@ class MainWindow(QMainWindow):
         """設定信號連接"""
         self.query_currencies_btn.clicked.connect(self.query_currencies)
         self.query_networks_btn.clicked.connect(self.query_networks)
+        self.enhanced_query_btn.clicked.connect(self.enhanced_query)
         
     def query_currencies(self):
         """查詢支援幣種"""
@@ -264,6 +298,124 @@ class MainWindow(QMainWindow):
             worker.error.connect(self.on_query_error)
             self.workers.append(worker)
             worker.start()
+    
+    def enhanced_query(self):
+        """智能幣種識別 - 先顯示傳統查詢，再顯示智能發現的額外項目"""
+        currency = self.currency_combo.currentText().upper()
+        if not currency:
+            self.log("請輸入幣種名稱")
+            return
+            
+        self.log(f"🔍 開始智能識別 {currency}...")
+        self.log("📋 第一步：執行傳統查詢...")
+        
+        self.show_progress()
+        self.clear_results()
+        
+        # 儲存當前幣種，稍後智能識別會用到
+        self.current_enhanced_currency = currency
+        
+        # 先執行傳統的網路查詢（與 query_networks 相同）
+        selected_exchange = self.exchange_combo.currentText()
+        if selected_exchange == "所有交易所":
+            exchanges = self.config_manager.get_exchange_names()
+        else:
+            exchanges = [selected_exchange]
+        
+        self.traditional_results_count = 0
+        self.expected_traditional_results = len(exchanges)
+        
+        # 執行傳統查詢
+        for exchange in exchanges:
+            worker = QueryWorker(exchange, self.exchange_manager, "networks", currency)
+            worker.finished.connect(self.on_traditional_result_for_enhanced)
+            worker.error.connect(self.on_query_error)
+            self.workers.append(worker)
+            worker.start()
+    
+    def on_traditional_result_for_enhanced(self, exchange_name: str, networks: List[NetworkInfo]):
+        """處理傳統查詢結果（用於智能識別流程）"""
+        if networks:
+            self.log(f"📊 傳統查詢 - {exchange_name.upper()}: 找到 {len(networks)} 個網路")
+            self.add_networks_to_table(exchange_name, networks, "傳統查詢")
+        else:
+            self.log(f"📊 傳統查詢 - {exchange_name.upper()}: 無支援網路")
+        
+        self.traditional_results_count += 1
+        
+        # 當所有傳統查詢完成後，啟動智能識別
+        if self.traditional_results_count >= self.expected_traditional_results:
+            self.log("📋 傳統查詢完成，開始智能識別...")
+            self.start_enhanced_identification()
+    
+    def start_enhanced_identification(self):
+        """啟動智能識別部分"""
+        # 創建工作器並連接信號
+        self.enhanced_worker = EnhancedQueryWorker(self.exchange_manager, self.current_enhanced_currency)
+        self.enhanced_worker.finished.connect(self.on_enhanced_query_completed)
+        self.enhanced_worker.error.connect(self.on_enhanced_query_error)
+        
+        # 使用QTimer在下一個事件循環中啟動
+        QTimer.singleShot(0, self.enhanced_worker.run)
+    
+    @Slot(str)
+    def on_enhanced_query_error(self, error_msg: str):
+        """處理增強查詢錯誤"""
+        self.log(error_msg)
+        self.hide_progress()
+    
+    @Slot(object)
+    def on_enhanced_query_completed(self, result: CoinIdentificationResult):
+        """處理增強查詢結果"""
+        print(f"[GUI DEBUG] on_enhanced_query_completed 被調用")
+        print(f"[GUI DEBUG] result: {result}")
+        print(f"[GUI DEBUG] result type: {type(result)}")
+        
+        self.log("📍 進入智能識別結果處理")
+        self.hide_progress()
+        
+        if not result:
+            self.log("❌ 智能識別完成，但無結果")
+            return
+            
+        self.log(f"📊 處理結果: 原始符號={result.original_symbol}")
+        
+        # 先顯示傳統查詢結果
+        self.log("📋 首先顯示傳統查詢結果...")
+        
+        # 過濾掉已經在傳統查詢中顯示的項目
+        additional_matches = []
+        original_currency = result.original_symbol
+        
+        for match in result.verified_matches:
+            # 如果這個匹配的符號與原始查詢的符號不同，就是額外發現的
+            if match.symbol != original_currency:
+                additional_matches.append(match)
+        
+        # 顯示額外發現的匹配
+        if additional_matches:
+            self.log(f"✨ 智能識別找到 {len(additional_matches)} 個額外的匹配項目")
+            for i, match in enumerate(additional_matches):
+                self.log(f"  💡 額外發現{i+1}: {match.exchange} - {match.symbol} ({match.network})")
+                self.log(f"      🔗 與 {original_currency} 是同一個代幣（合約: {match.contract_address[:20]}...）")
+                self.add_coin_variant_to_table(match, "智能識別")
+        else:
+            self.log("ℹ️ 智能識別沒有找到額外的匹配項目")
+        
+        # 顯示可能的匹配  
+        if result.possible_matches:
+            self.log(f"🤔 找到 {len(result.possible_matches)} 個可能的匹配項目")
+            for i, match in enumerate(result.possible_matches):
+                self.log(f"  ❓ 可能匹配{i+1}: {match.exchange} - {match.symbol} ({match.network})")
+                self.add_coin_variant_to_table(match, "可能匹配")
+        
+        # 顯示除錯資訊
+        if result.debug_info:
+            self.log(f"⚠️ 發現 {len(result.debug_info)} 個需要注意的情況")
+            for debug in result.debug_info:
+                self.log(f"🔍 [警告] {debug}")
+        
+        self.log("🎉 智能識別完成")
             
     def on_currencies_received(self, exchange_name: str, currencies: List[str]):
         """處理幣種查詢結果"""
@@ -290,9 +442,13 @@ class MainWindow(QMainWindow):
         self.log(f"{exchange_name.upper()} 錯誤: {error_message}")
         self.check_all_workers_done()
         
-    def add_networks_to_table(self, exchange_name: str, networks: List[NetworkInfo]):
+    def add_networks_to_table(self, exchange_name: str, networks: List[NetworkInfo], query_type: str = "傳統查詢"):
         """將網路資訊添加到表格"""
-        currency = self.currency_combo.currentText().upper()
+        # 取得幣種名稱，優先使用當前設定的幣種
+        if hasattr(self, 'current_enhanced_currency'):
+            currency = self.current_enhanced_currency
+        else:
+            currency = self.currency_combo.currentText().upper()
         
         for network in networks:
             row = self.results_table.rowCount()
@@ -313,6 +469,29 @@ class MainWindow(QMainWindow):
                 status = "停止出金"
             self.results_table.setItem(row, 5, QTableWidgetItem(status))
             
+            # 合約地址和類型
+            self.results_table.setItem(row, 6, QTableWidgetItem(network.contract_address or ""))
+            self.results_table.setItem(row, 7, QTableWidgetItem(query_type))
+    
+    def add_coin_variant_to_table(self, variant, match_type: str):
+        """將幣種變體添加到表格"""
+        row = self.results_table.rowCount()
+        self.results_table.insertRow(row)
+        
+        # 填入資料
+        self.results_table.setItem(row, 0, QTableWidgetItem(variant.exchange.upper()))
+        self.results_table.setItem(row, 1, QTableWidgetItem(variant.symbol))
+        self.results_table.setItem(row, 2, QTableWidgetItem(variant.network))
+        self.results_table.setItem(row, 3, QTableWidgetItem("N/A"))  # 需要額外查詢
+        self.results_table.setItem(row, 4, QTableWidgetItem("N/A"))  # 需要額外查詢
+        
+        # 狀態顯示為匹配類型
+        self.results_table.setItem(row, 5, QTableWidgetItem(match_type))
+        
+        # 合約地址和類型
+        self.results_table.setItem(row, 6, QTableWidgetItem(variant.contract_address))
+        self.results_table.setItem(row, 7, QTableWidgetItem("智能識別"))
+            
     def clear_results(self):
         """清空結果表格"""
         self.results_table.setRowCount(0)
@@ -322,6 +501,7 @@ class MainWindow(QMainWindow):
         self.progress_bar.setVisible(True)
         self.progress_bar.setRange(0, 0)  # 無限進度條
         
+    @Slot()
     def hide_progress(self):
         """隱藏進度條"""
         self.progress_bar.setVisible(False)

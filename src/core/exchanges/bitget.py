@@ -107,7 +107,10 @@ class BitgetExchange(BaseExchange):
                             min_withdrawal=float(chain_info.get('minWithdrawAmount', 0)),
                             withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
                             deposit_enabled=chain_info.get('rechargeable') == 'true',  # 字串比較
-                            withdrawal_enabled=chain_info.get('withdrawable') == 'true'  # 字串比較
+                            withdrawal_enabled=chain_info.get('withdrawable') == 'true',  # 字串比較
+                            contract_address=chain_info.get('contractAddress'),
+                            network_full_name=chain_info.get('chain', ''),  # Bitget 沒有分離的完整名稱
+                            browser_url=chain_info.get('browserUrl')
                         ))
                     break
             
