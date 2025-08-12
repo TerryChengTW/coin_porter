@@ -95,7 +95,7 @@ class NetworkStandardizer:
             ),
             "BRC20": NetworkMapping(
                 standard_name="BRC20",
-                aliases=["BRC20", "ORDIBTC", "ORDI-BRC20"]
+                aliases=["BRC20", "ORDIBTC", "ORDI-BRC20", "BTC"]
             )
         }
         return mappings
@@ -178,10 +178,157 @@ class CoinIdentifier:
         
     def _load_contract_mappings(self):
         """載入合約映射資料"""
-        # 這裡可以從之前的分析結果載入已知的映射關係
-        # 或者從API回應檔案中動態載入
-        # 建立完整的映射關係，確保雙向映射
-        contract_mappings = [
+        # 動態從API回應檔案載入合約映射，或使用預設映射
+        try:
+            contract_mappings = self._load_from_api_responses()
+            print(f"[INFO] 從 API 回應檔案載入了 {len(contract_mappings)} 個映射關係")
+        except Exception as e:
+            print(f"[WARN] 無法從 API 回應檔案載入映射，使用預設映射: {e}")
+            contract_mappings = self._get_default_contract_mappings()
+            
+        
+        # 為每個映射組添加所有變體
+        for mapping in contract_mappings:
+            contract = mapping["contract"]
+            network = mapping["network"]
+            
+            # 為每個變體添加映射
+            for symbol, exchanges in mapping["variants"]:
+                for exchange in exchanges:
+                    self.contract_db.add_contract(symbol, network, contract, exchange)
+    
+    def _load_from_api_responses(self):
+        """從 API 回應檔案動態載入合約映射"""
+        api_responses_dir = Path(__file__).parent.parent.parent.parent / "docs" / "api-response-examples"
+        contract_mappings = []
+        
+        # 檢查目錄是否存在
+        if not api_responses_dir.exists():
+            raise FileNotFoundError(f"API 回應檔案目錄不存在: {api_responses_dir}")
+        
+        # 載入各交易所數據
+        exchange_data = {}
+        
+        # Binance
+        binance_file = api_responses_dir / "binance" / "all_coins_information_full_response.json"
+        if binance_file.exists():
+            with open(binance_file, 'r', encoding='utf-8') as f:
+                exchange_data['binance'] = json.load(f)
+        
+        # Bybit  
+        bybit_file = api_responses_dir / "bybit" / "coin_info_full_response.json"
+        if bybit_file.exists():
+            with open(bybit_file, 'r', encoding='utf-8') as f:
+                bybit_data = json.load(f)
+                exchange_data['bybit'] = bybit_data.get('result', {}).get('rows', [])
+        
+        # Bitget
+        bitget_file = api_responses_dir / "bitget" / "public_coins_full_response.json"
+        if bitget_file.exists():
+            with open(bitget_file, 'r', encoding='utf-8') as f:
+                bitget_data = json.load(f)
+                exchange_data['bitget'] = bitget_data.get('data', [])
+        
+        # 分析合約地址映射
+        contract_mappings = self._analyze_contract_mappings(exchange_data)
+        
+        return contract_mappings
+    
+    def _analyze_contract_mappings(self, exchange_data: Dict) -> List[Dict]:
+        """分析交易所數據，找出合約地址映射關係"""
+        contract_map = {}  # {contract_address: {network: [(symbol, exchange)]}}
+        
+        # 處理 Binance 數據
+        if 'binance' in exchange_data:
+            for coin in exchange_data['binance']:
+                symbol = coin['coin']
+                for network in coin.get('network_list', []):
+                    contract = network.get('contract_address')
+                    if contract and contract.lower() not in ['null', 'none', '']:
+                        net_name = network['network']
+                        # 標準化合約地址為小寫和網路名稱
+                        contract = contract.lower()
+                        std_net_name = self.network_standardizer.standardize_network(net_name)
+                        key = f"{contract}_{std_net_name}"
+                        
+                        if key not in contract_map:
+                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
+                        
+                        if symbol not in contract_map[key]['variants']:
+                            contract_map[key]['variants'][symbol] = []
+                        contract_map[key]['variants'][symbol].append('binance')
+        
+        # 處理 Bybit 數據
+        if 'bybit' in exchange_data:
+            for coin in exchange_data['bybit']:
+                symbol = coin['coin']
+                for chain in coin.get('chains', []):
+                    contract = chain.get('contractAddress')
+                    net_name = chain['chain']
+                    std_net_name = self.network_standardizer.standardize_network(net_name)
+                    
+                    # 特殊處理 BRC20 代幣
+                    if std_net_name in ['BRC20', 'BTC'] and not contract:
+                        # 對於 BRC20 代幣，使用幣種符號的小寫作為標識符
+                        contract = symbol.lower()
+                    
+                    if contract and str(contract).lower() not in ['null', 'none', '']:
+                        # 標準化合約地址為小寫
+                        contract = str(contract).lower()
+                        key = f"{contract}_{std_net_name}"
+                        
+                        if key not in contract_map:
+                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
+                        
+                        if symbol not in contract_map[key]['variants']:
+                            contract_map[key]['variants'][symbol] = []
+                        contract_map[key]['variants'][symbol].append('bybit')
+        
+        # 處理 Bitget 數據
+        if 'bitget' in exchange_data:
+            for coin in exchange_data['bitget']:
+                symbol = coin['coin']
+                for chain in coin.get('chains', []):
+                    contract = chain.get('contractAddress')
+                    net_name = chain['chain']
+                    std_net_name = self.network_standardizer.standardize_network(net_name)
+                    
+                    # 特殊處理 BRC20 代幣
+                    if std_net_name in ['BRC20', 'BTC'] and not contract:
+                        # 對於 BRC20 代幣，使用幣種符號的小寫作為標識符
+                        contract = symbol.lower()
+                    
+                    if contract and str(contract).lower() not in ['null', 'none', '']:
+                        # 標準化合約地址為小寫
+                        contract = str(contract).lower()
+                        key = f"{contract}_{std_net_name}"
+                        
+                        if key not in contract_map:
+                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
+                        
+                        if symbol not in contract_map[key]['variants']:
+                            contract_map[key]['variants'][symbol] = []
+                        contract_map[key]['variants'][symbol].append('bitget')
+        
+        # 轉換為標準格式，只保留有多個變體的映射
+        mappings = []
+        for key, data in contract_map.items():
+            if len(data['variants']) > 1:  # 只保留有多個符號變體的合約
+                variants = []
+                for symbol, exchanges in data['variants'].items():
+                    variants.append((symbol, exchanges))
+                
+                mappings.append({
+                    'contract': data['contract'],
+                    'network': data['network'], 
+                    'variants': variants
+                })
+        
+        return mappings
+    
+    def _get_default_contract_mappings(self):
+        """獲取預設的硬編碼合約映射（作為備用）"""
+        return [
             # CAT/1000CAT - BSC網路
             {
                 "contract": "0x6894cde390a3f51155ea41ed24a33a4827d3063d",
@@ -246,16 +393,6 @@ class CoinIdentifier:
                 ]
             }
         ]
-        
-        # 為每個映射組添加所有變體
-        for mapping in contract_mappings:
-            contract = mapping["contract"]
-            network = mapping["network"]
-            
-            # 為每個變體添加映射
-            for symbol, exchanges in mapping["variants"]:
-                for exchange in exchanges:
-                    self.contract_db.add_contract(symbol, network, contract, exchange)
     
     def identify_coin(self, input_symbol: str, exchange_data: Dict[str, List]) -> CoinIdentificationResult:
         """
@@ -447,72 +584,12 @@ class CoinIdentifier:
         return possible_symbols
     
     def _get_contract_mappings(self):
-        """獲取合約映射配置（與_load_contract_mappings中的相同）"""
-        return [
-            # CAT/1000CAT - BSC網路
-            {
-                "contract": "0x6894cde390a3f51155ea41ed24a33a4827d3063d",
-                "network": "BSC", 
-                "variants": [
-                    ("CAT", ["bybit"]),
-                    ("1000CAT", ["binance"])
-                ]
-            },
-            # SATS/1000SATS - BRC20網路
-            {
-                "contract": "sats",
-                "network": "BRC20",
-                "variants": [
-                    ("SATS", ["bitget", "bybit"]),
-                    ("1000SATS", ["binance"])
-                ]
-            },
-            # BABYDOGE/1MBABYDOGE - BSC網路
-            {
-                "contract": "0xc748673057861a797275cd8a068abb95a902e8de",
-                "network": "BSC",
-                "variants": [
-                    ("BABYDOGE", ["bybit"]),
-                    ("1MBABYDOGE", ["binance"])
-                ]
-            },
-            # BEAM/BEAMX - ETH網路  
-            {
-                "contract": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
-                "network": "ETH",
-                "variants": [
-                    ("BEAM", ["bybit"]),
-                    ("BEAMX", ["binance"])
-                ]
-            },
-            # BTT/BTTC - TRX網路
-            {
-                "contract": "TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
-                "network": "TRX", 
-                "variants": [
-                    ("BTT", ["bybit"]),
-                    ("BTTC", ["binance"])
-                ]
-            },
-            # NEIRO/NEIROCTO - ETH網路
-            {
-                "contract": "0x812ba41e071c7b7fa4ebcfb62df5f45f6fa853ee",
-                "network": "ETH",
-                "variants": [
-                    ("NEIRO", ["binance"]),
-                    ("NEIROCTO", ["bybit"])
-                ]
-            },
-            # ZEROLEND/ZERO - LINEA網路
-            {
-                "contract": "0x78354f8dccb269a615a7e0a24f9b0718fdc3c7a7",
-                "network": "LINEA",
-                "variants": [
-                    ("ZEROLEND", ["bitget"]),
-                    ("ZERO", ["bybit"])
-                ]
-            }
-        ]
+        """獲取合約映射配置"""
+        # 使用相同的動態載入邏輯，或預設映射
+        try:
+            return self._load_from_api_responses()
+        except Exception:
+            return self._get_default_contract_mappings()
 
 
 def create_coin_identifier() -> CoinIdentifier:
