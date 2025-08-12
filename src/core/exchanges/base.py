@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Union
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -25,6 +25,59 @@ class CoinInfo:
     deposit_all_enabled: bool          # 是否支援所有網路入金
     withdrawal_all_enabled: bool       # 是否支援所有網路出金
     networks: List[NetworkInfo]        # 支援的網路列表
+
+
+@dataclass
+class RawCoinData:
+    """原始完整資料 - 直接儲存API回應"""
+    exchange: str                      # 交易所名稱
+    raw_response: Dict                 # 完整的原始API回應
+    timestamp: str                     # 查詢時間
+
+
+@dataclass
+class SearchableNetworkInfo:
+    """智能搜索用的網路資訊 - 只包含重要欄位"""
+    # 基本識別類別
+    network: str                              # 網路名稱
+    chain_type: Optional[str] = None          # 詳細鏈名稱 (Bybit)
+    
+    # 充提現功能類別
+    deposit_enabled: bool = True              # 充值開關
+    withdrawal_enabled: bool = True           # 提現開關
+    
+    # 費用與限額類別
+    withdrawal_fee: float = 0.0               # 基本提現手續費
+    extra_withdraw_fee: Optional[float] = None # 額外手續費百分比 (Bitget)
+    withdraw_percentage_fee: Optional[float] = None # 手續費百分比 (Bybit)
+    min_deposit: Optional[float] = None       # 最小充值額
+    min_withdrawal: float = 0.0               # 最小提現額
+    max_withdrawal: Optional[float] = None    # 最大提現額 (Binance)
+    
+    # 合約與瀏覽器類別
+    contract_address: Optional[str] = None    # 合約地址 (智能識別核心)
+    browser_url: Optional[str] = None         # 區塊瀏覽器URL
+    
+    # 網路狀態類別
+    busy: Optional[bool] = None               # 網路繁忙 (Binance)
+    congestion: Optional[str] = None          # 擁堵狀況 (Bitget: normal/congested)
+    estimated_arrival_time: Optional[int] = None # 預估到帳時間 (Binance)
+    
+    # 描述資訊類別
+    deposit_desc: Optional[str] = None        # 充值描述 (Binance)
+    withdraw_desc: Optional[str] = None       # 提現描述 (Binance)
+
+
+@dataclass
+class SearchableCoinInfo:
+    """智能搜索用的幣種資訊 - 只包含重要欄位"""
+    # 基本識別類別
+    exchange: str                             # 交易所名稱
+    symbol: str                               # 幣種符號
+    name: str                                 # 幣種名稱
+    
+    # 網路列表
+    networks: List[SearchableNetworkInfo] = field(default_factory=list)
 
 
 @dataclass
