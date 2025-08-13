@@ -48,7 +48,7 @@ class EnhancedQueryWorker(QObject):
 
 
 class QueryWorker(QThread):
-    """背景查詢工作執行緒"""
+    """背景查詢工作執行緒 - 只用於智能識別的傳統查詢部分"""
     finished = Signal(str, object)  # exchange_name, result
     error = Signal(str, str)  # exchange_name, error_message
     
@@ -64,14 +64,7 @@ class QueryWorker(QThread):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             
-            if self.query_type == "currencies":
-                # 獲取單一交易所的支援幣種
-                exchange = self.manager._exchanges.get(self.exchange_name)
-                if exchange:
-                    result = loop.run_until_complete(exchange.get_supported_currencies())
-                else:
-                    result = []
-            elif self.query_type == "networks" and self.currency:
+            if self.query_type == "networks" and self.currency:
                 # 獲取單一交易所的網路資訊
                 exchange = self.manager._exchanges.get(self.exchange_name)
                 if exchange:
@@ -164,11 +157,7 @@ class MainWindow(QMainWindow):
         control_layout.addWidget(self.currency_combo)
         
         # 查詢按鈕
-        self.query_currencies_btn = QPushButton("查詢支援幣種")
-        self.query_networks_btn = QPushButton("查詢網路資訊")
         self.enhanced_query_btn = QPushButton("智能幣種識別")
-        control_layout.addWidget(self.query_currencies_btn)
-        control_layout.addWidget(self.query_networks_btn)
         control_layout.addWidget(self.enhanced_query_btn)
         
         control_layout.addStretch()
@@ -250,54 +239,9 @@ class MainWindow(QMainWindow):
         
     def setup_connections(self):
         """設定信號連接"""
-        self.query_currencies_btn.clicked.connect(self.query_currencies)
-        self.query_networks_btn.clicked.connect(self.query_networks)
         self.enhanced_query_btn.clicked.connect(self.enhanced_query)
         
-    def query_currencies(self):
-        """查詢支援幣種"""
-        self.log("開始查詢支援幣種...")
-        self.show_progress()
-        
-        selected_exchange = self.exchange_combo.currentText()
-        if selected_exchange == "所有交易所":
-            exchanges = self.config_manager.get_exchange_names()
-        else:
-            exchanges = [selected_exchange]
             
-        self.clear_results()
-        
-        for exchange in exchanges:
-            worker = QueryWorker(exchange, self.exchange_manager, "currencies")
-            worker.finished.connect(self.on_currencies_received)
-            worker.error.connect(self.on_query_error)
-            self.workers.append(worker)
-            worker.start()
-            
-    def query_networks(self):
-        """查詢網路資訊"""
-        currency = self.currency_combo.currentText().upper()
-        if not currency:
-            self.log("請輸入幣種名稱")
-            return
-            
-        self.log(f"開始查詢 {currency} 網路資訊...")
-        self.show_progress()
-        
-        selected_exchange = self.exchange_combo.currentText()
-        if selected_exchange == "所有交易所":
-            exchanges = self.config_manager.get_exchange_names()
-        else:
-            exchanges = [selected_exchange]
-            
-        self.clear_results()
-        
-        for exchange in exchanges:
-            worker = QueryWorker(exchange, self.exchange_manager, "networks", currency)
-            worker.finished.connect(self.on_networks_received)
-            worker.error.connect(self.on_query_error)
-            self.workers.append(worker)
-            worker.start()
     
     def enhanced_query(self):
         """智能幣種識別 - 先顯示傳統查詢，再顯示智能發現的額外項目"""
@@ -424,25 +368,7 @@ class MainWindow(QMainWindow):
         
         self.log("🎉 智能識別完成")
             
-    def on_currencies_received(self, exchange_name: str, currencies: List[str]):
-        """處理幣種查詢結果"""
-        if currencies:
-            self.log(f"{exchange_name.upper()}: 找到 {len(currencies)} 個幣種")
-            # 可以考慮將結果顯示在表格中
-        else:
-            self.log(f"{exchange_name.upper()}: 無法獲取幣種列表")
         
-        self.check_all_workers_done()
-        
-    def on_networks_received(self, exchange_name: str, networks: List[NetworkInfo]):
-        """處理網路查詢結果"""
-        if networks:
-            self.log(f"{exchange_name.upper()}: 找到 {len(networks)} 個網路")
-            self.add_networks_to_table(exchange_name, networks)
-        else:
-            self.log(f"{exchange_name.upper()}: 無支援網路")
-            
-        self.check_all_workers_done()
         
     def on_query_error(self, exchange_name: str, error_message: str):
         """處理查詢錯誤"""
