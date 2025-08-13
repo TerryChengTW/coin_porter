@@ -41,16 +41,6 @@ class ExchangeManager:
                     exchange = ExchangeFactory.create(exchange_name, account_config)
                     self._exchanges[exchange_name] = exchange
     
-    def _initialize_public_exchanges(self):
-        """初始化公開查詢的交易所（不需認證）"""
-        enabled_exchanges = self.api_key_manager.get_enabled_exchanges()
-        
-        for exchange_name in enabled_exchanges:
-            if exchange_name not in self._exchanges:
-                # 對於支援公開查詢的交易所，創建無認證實例
-                if self.config_manager.supports_public_query(exchange_name):
-                    exchange = ExchangeFactory.create(exchange_name, None)
-                    self._exchanges[f"{exchange_name}_public"] = exchange
     
     async def get_all_coins_data(self) -> Tuple[Dict[str, List[RawCoinData]], Dict[str, List[SearchableCoinInfo]]]:
         """一次性獲取所有交易所的完整幣種數據
@@ -339,29 +329,6 @@ class ExchangeManager:
                 ))
         
         return variants
-    
-    async def query_alternative_names(self, currency: str) -> Dict[str, List[NetworkInfo]]:
-        """查詢可能的別名
-        
-        Returns:
-            包含所有可能別名的查詢結果
-        """
-        # 從已知映射中獲取可能的別名
-        possible_symbols = self.coin_identifier.get_possible_symbols(currency)
-        
-        all_results = {}
-        
-        # 對每個可能的符號進行查詢
-        for symbol in possible_symbols:
-            if symbol != currency:  # 避免重複查詢原始符號
-                symbol_results = await self.query_currency_support(symbol)
-                for exchange, networks in symbol_results.items():
-                    if networks:  # 只保留有結果的
-                        if exchange not in all_results:
-                            all_results[exchange] = []
-                        all_results[exchange].extend(networks)
-        
-        return all_results
     
     def get_available_accounts(self) -> Dict[str, List[str]]:
         """獲取所有可用的帳號

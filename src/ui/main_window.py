@@ -366,21 +366,6 @@ class MainWindow(QMainWindow):
         self.results_table.setItem(row, 6, QTableWidgetItem(variant.contract_address))
         self.results_table.setItem(row, 7, QTableWidgetItem("智能識別"))
         
-    def _get_network_details(self, variant):
-        """從快取的搜索數據中獲取網路詳細資訊"""
-        # 如果沒有快取數據，返回None
-        if not hasattr(self, '_cached_searchable_data') or not self._cached_searchable_data:
-            return None, None
-            
-        exchange_data = self._cached_searchable_data.get(variant.exchange, [])
-        
-        for coin in exchange_data:
-            if coin.symbol == variant.symbol:
-                for network in coin.networks:
-                    if network.network == variant.network:
-                        return network.min_withdrawal, network.withdrawal_fee
-                        
-        return None, None
         
     def _get_network_details_and_status(self, variant):
         """從快取的搜索數據中獲取網路詳細資訊和狀態"""

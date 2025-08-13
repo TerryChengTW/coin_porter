@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
-from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
+from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
 
 try:
     import sys
@@ -28,15 +28,10 @@ class BitgetExchange(BaseExchange):
         self._private_client = None  # 私有 API 需認證
         
         # 公開 API 始終可用
-        self._setup_public_client()
         
         if account_config:
             self._setup_private_client()
     
-    def _setup_public_client(self):
-        """設定 Bitget 公開客戶端（實際上 MarketApi 仍需認證）"""
-        # Bitget 的 MarketApi 實際上需要認證，沒有純公開版本
-        self._public_client = None
     
     def _setup_private_client(self):
         """設定 Bitget 私有客戶端"""

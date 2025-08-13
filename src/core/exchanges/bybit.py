@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
-from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
+from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
 
 try:
     from pybit.unified_trading import HTTP

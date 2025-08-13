@@ -527,35 +527,6 @@ class CoinIdentifier:
         
         return matches, conflicts
     
-    def _merge_results(self, original_symbol: str, route1_results: Tuple, route2_results: Tuple) -> CoinIdentificationResult:
-        """合併兩條路線的結果並去重"""
-        route1_matches, route1_debug = route1_results
-        route2_matches, route2_debug = route2_results
-        
-        # 合併結果
-        all_matches = route1_matches + route2_matches
-        all_debug = route1_debug + route2_debug
-        
-        # 去重 (基於 exchange + symbol + network + contract_address)
-        seen = set()
-        verified_matches = []
-        possible_matches = []
-        
-        for match in all_matches:
-            key = (match.exchange, match.symbol, match.network, match.contract_address)
-            if key not in seen:
-                seen.add(key)
-                if match.is_verified:
-                    verified_matches.append(match)
-                else:
-                    possible_matches.append(match)
-        
-        return CoinIdentificationResult(
-            original_symbol=original_symbol,
-            verified_matches=verified_matches,
-            possible_matches=possible_matches,
-            debug_info=all_debug
-        )
     
     def get_possible_symbols(self, symbol: str) -> Set[str]:
         """獲取可能的幣種符號別名"""

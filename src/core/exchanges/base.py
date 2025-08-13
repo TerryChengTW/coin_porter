@@ -17,16 +17,6 @@ class NetworkInfo:
     actual_symbol: Optional[str] = None      # 實際找到的幣種符號 (用於 denomination 情況)
 
 
-@dataclass
-class CoinInfo:
-    """幣種完整資訊"""
-    symbol: str                        # 幣種符號
-    full_name: str                     # 完整名稱
-    trading_enabled: bool              # 是否支援交易
-    deposit_all_enabled: bool          # 是否支援所有網路入金
-    withdrawal_all_enabled: bool       # 是否支援所有網路出金
-    networks: List[NetworkInfo]        # 支援的網路列表
-
 
 @dataclass
 class RawCoinData:
@@ -111,14 +101,11 @@ class BaseExchange(ABC):
     # 公開端點 - 不需認證
     
     @abstractmethod
-    async def get_all_coins_info(self) -> List[CoinInfo]:
+    async def get_all_coins_info(self):
         """獲取所有幣種的完整資訊（包含所有網路）
         
-        這個方法應該返回交易所支援的所有幣種及其網路資訊，
-        相當於一次性獲取所有資料，而不需要逐個查詢特定幣種。
-        
         Returns:
-            List[CoinInfo]: 所有幣種的完整資訊列表
+            Tuple[List[RawCoinData], List[SearchableCoinInfo]]: 原始資料和搜尋用資料
         """
         pass
     
@@ -186,7 +173,3 @@ class ExchangeFactory:
             raise ValueError(f"不支援的交易所: {name}")
         return exchange_class(account_config)
     
-    @classmethod
-    def get_supported_exchanges(cls) -> List[str]:
-        """獲取支援的交易所列表"""
-        return list(cls._exchanges.keys())
