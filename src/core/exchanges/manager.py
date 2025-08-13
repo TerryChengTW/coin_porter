@@ -126,11 +126,16 @@ class ExchangeManager:
         all_matches.extend(self._convert_traditional_to_variants(traditional_results, currency))
         all_matches.extend(smart_results)
         
-        # 去重
+        # 去重（使用更寬鬆的鍵，避免合約地址空字串導致的問題）
         seen = set()
         verified_matches = []
         for match in all_matches:
-            key = (match.exchange, match.symbol, match.network, match.contract_address)
+            # 對於去重，如果沒有合約地址，不使用合約地址作為去重鍵的一部分
+            if match.contract_address and match.contract_address.strip():
+                key = (match.exchange, match.symbol, match.network, match.contract_address.lower())
+            else:
+                key = (match.exchange, match.symbol, match.network)
+            
             if key not in seen:
                 seen.add(key)
                 verified_matches.append(match)
@@ -193,10 +198,40 @@ class ExchangeManager:
         return results
     
     def _smart_identification_from_cached_data(self, currency: str, searchable_data: Dict[str, List[SearchableCoinInfo]]) -> List[CoinVariant]:
-        """從快取數據執行智能識別（基於合約地址的跨交易所匹配）"""
+        """從快取數據執行智能識別（基於合約地址的跨交易所匹配），排除傳統查詢已找到的項目"""
         contract_map = {}  # {standardized_contract_key: [(exchange, symbol, original_network)]}
         variants = []
         network_standardizer = NetworkStandardizer()
+        
+        # 首先獲取傳統查詢的結果，用於過濾重複項
+        traditional_found = set()  # (exchange, symbol, network)
+        for exchange_name, coins in searchable_data.items():
+            for coin in coins:
+                # 檢查是否匹配：直接匹配或去除 denomination 後匹配
+                symbol_matches = False
+                
+                # 直接匹配
+                if coin.symbol.upper() == currency.upper():
+                    symbol_matches = True
+                
+                # 檢查 denomination 匹配 (處理 1000SATS -> SATS, 1MBABYDOGE -> BABYDOGE 的情況)
+                elif coin.denomination and coin.denomination > 1:
+                    # 如果幣種符號以 denomination 數字開頭，去掉前綴比較
+                    if coin.symbol.startswith(str(coin.denomination)):
+                        base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    # 處理簡寫格式 (1M = 1,000,000)
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]  # 去掉 "1M"
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                
+                if symbol_matches:
+                    for network in coin.networks:
+                        traditional_found.add((exchange_name, coin.symbol, network.network))
+        
+        print(f"[DEBUG] 智能識別：傳統查詢已找到 {len(traditional_found)} 個項目")
         
         # 收集所有合約地址映射（使用標準化網路名稱）
         for exchange_name, coins in searchable_data.items():
@@ -216,7 +251,22 @@ class ExchangeManager:
         input_contracts = set()
         for exchange_name, coins in searchable_data.items():
             for coin in coins:
+                # 檢查所有可能匹配的符號（包括 denomination 處理）
+                symbol_matches = False
+                
                 if coin.symbol.upper() == currency.upper():
+                    symbol_matches = True
+                elif coin.denomination and coin.denomination > 1:
+                    if coin.symbol.startswith(str(coin.denomination)):
+                        base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                
+                if symbol_matches:
                     for network in coin.networks:
                         if network.contract_address:
                             std_network = network_standardizer.standardize_network(network.network)
@@ -251,21 +301,24 @@ class ExchangeManager:
         
         print(f"[DEBUG] 擴展後總共有 {len(all_related_contracts)} 個相關合約地址")
         
-        # 第三階段：返回所有相關合約的所有變體
+        # 第三階段：返回所有相關合約的所有變體（排除傳統查詢已找到的）
         for contract_key in all_related_contracts:
             if contract_key in contract_map:
                 entries = contract_map[contract_key]
-                # 包含所有使用相同合約的幣種
+                # 包含所有使用相同合約的幣種，但排除傳統查詢已找到的
                 for exchange, symbol, original_network in entries:
-                    variants.append(CoinVariant(
-                        exchange=exchange,
-                        symbol=symbol,
-                        network=original_network,  # 使用原始網路名稱
-                        contract_address=contract_key.split('_')[0],  # 取出合約地址部分
-                        is_verified=True
-                    ))
+                    # 檢查是否已被傳統查詢找到
+                    if (exchange, symbol, original_network) not in traditional_found:
+                        variants.append(CoinVariant(
+                            exchange=exchange,
+                            symbol=symbol,
+                            network=original_network,  # 使用原始網路名稱
+                            contract_address=contract_key.split('_')[0],  # 取出合約地址部分
+                            is_verified=True,
+                            source="smart"
+                        ))
         
-        print(f"[DEBUG] 智能識別最終找到 {len(variants)} 個變體")
+        print(f"[DEBUG] 智能識別最終找到 {len(variants)} 個額外變體（排除重複）")
         return variants
     
     def _convert_traditional_to_variants(self, traditional_results: Dict[str, List[NetworkInfo]], currency: str) -> List[CoinVariant]:
