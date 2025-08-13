@@ -37,36 +37,6 @@ class BinanceExchange(BaseExchange):
         
         self._client = Wallet(config_rest_api=configuration)
     
-    async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表（需要認證）"""
-        self._ensure_auth()
-        
-        if not self._client:
-            raise Exception("Binance client not available - SDK may not be installed")
-        
-        try:
-            # 在執行緒池中執行同步呼叫
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._client.rest_api.all_coins_information()
-            )
-            
-            data = response.data()
-            
-            # 提取幣種名稱
-            currencies = []
-            for coin_info in data:
-                # Binance SDK 回傳的是物件，不是字典
-                coin = getattr(coin_info, 'coin', '')
-                if coin:
-                    currencies.append(coin)
-            
-            return sorted(list(set(currencies)))  # 去重並排序
-            
-        except Exception as e:
-            raise Exception(f"Binance query failed: {str(e)}")
-    
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊（需要認證）"""
         self._ensure_auth()

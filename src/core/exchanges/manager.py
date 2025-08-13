@@ -350,45 +350,6 @@ class ExchangeManager:
         
         return all_results
     
-    async def get_all_supported_currencies(self) -> Dict[str, List[str]]:
-        """獲取所有交易所支援的幣種列表
-        
-        Returns:
-            {"binance": ["BTC", "ETH", ...], "bybit": [...]}
-        """
-        self._initialize_public_exchanges()
-        
-        results = {}
-        tasks = []
-        exchange_names = []
-        
-        # 準備所有查詢任務
-        for exchange_key, exchange in self._exchanges.items():
-            exchange_name = exchange_key.replace('_public', '')
-            tasks.append(exchange.get_supported_currencies())
-            exchange_names.append(exchange_name)
-        
-        if not tasks:
-            return results
-        
-        # 並行查詢所有交易所
-        try:
-            currency_results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            for i, result in enumerate(currency_results):
-                exchange_name = exchange_names[i]
-                
-                if isinstance(result, Exception):
-                    print(f"[錯誤] {exchange_name}: {str(result)}")
-                    results[exchange_name] = []
-                else:
-                    results[exchange_name] = result
-                    
-        except Exception as e:
-            print(f"[錯誤] 查詢支援幣種時發生錯誤: {str(e)}")
-        
-        return results
-    
     def get_available_accounts(self) -> Dict[str, List[str]]:
         """獲取所有可用的帳號
         

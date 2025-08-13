@@ -31,33 +31,6 @@ class BybitExchange(BaseExchange):
             api_secret=self.account_config.secret
         )
     
-    async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表（需要認證）"""
-        self._ensure_auth()
-        
-        try:
-            # 使用 get_coin_info 查詢所有幣種（傳入空參數）
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._client.get_coin_info()
-            )
-            
-            if response.get('retCode') != 0:
-                raise Exception(f"Bybit API 錯誤: {response.get('retMsg', 'Unknown error')}")
-            
-            # 提取幣種名稱
-            currencies = []
-            for row in response.get('result', {}).get('rows', []):
-                coin = row.get('coin', '')
-                if coin:
-                    currencies.append(coin)
-            
-            return sorted(list(set(currencies)))  # 去重並排序
-            
-        except Exception as e:
-            raise Exception(f"Bybit 查詢支援幣種失敗: {str(e)}")
-    
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊（需要認證）"""
         self._ensure_auth()

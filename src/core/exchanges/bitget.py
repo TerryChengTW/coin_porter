@@ -52,36 +52,6 @@ class BitgetExchange(BaseExchange):
             first=False
         )
     
-    async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表（需要認證）"""
-        self._ensure_auth()
-        
-        if not self._private_client:
-            raise Exception("Bitget client not available - SDK may not be installed")
-        
-        try:
-            # 使用認證端點查詢所有幣種
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._private_client.public_coins({})
-            )
-            
-            if response.get('code') != '00000':
-                raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
-            
-            # 提取幣種名稱
-            currencies = []
-            for coin_info in response.get('data', []):
-                coin = coin_info.get('coin', '')  # Bitget 使用 'coin' 而不是 'coinName'
-                if coin:
-                    currencies.append(coin)
-            
-            return sorted(list(set(currencies)))  # 去重並排序
-            
-        except Exception as e:
-            raise Exception(f"Bitget query failed: {str(e)}")
-    
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊（需要認證）"""
         self._ensure_auth()

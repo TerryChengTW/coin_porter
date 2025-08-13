@@ -110,11 +110,6 @@ class BaseExchange(ABC):
     
     # 公開端點 - 不需認證
     @abstractmethod
-    async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表"""
-        pass
-    
-    @abstractmethod
     async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
         """獲取指定幣種支援的網路資訊"""
         pass
