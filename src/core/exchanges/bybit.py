@@ -1,6 +1,7 @@
 import asyncio
-from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
 
 try:
     from pybit.unified_trading import HTTP
@@ -75,10 +76,14 @@ class BybitExchange(BaseExchange):
             for row in response.get('result', {}).get('rows', []):
                 if row.get('coin') == currency.upper():
                     for chain_info in row.get('chains', []):
+                        # 安全轉換數值，處理空字串
+                        withdraw_min_str = chain_info.get('withdrawMin', '0')
+                        withdraw_fee_str = chain_info.get('withdrawFee', '0')
+                        
                         networks.append(NetworkInfo(
                             network=chain_info.get('chain', ''),
-                            min_withdrawal=float(chain_info.get('withdrawMin', 0)),
-                            withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
+                            min_withdrawal=float(withdraw_min_str) if withdraw_min_str and withdraw_min_str.strip() else 0.0,
+                            withdrawal_fee=float(withdraw_fee_str) if withdraw_fee_str and withdraw_fee_str.strip() else 0.0,
                             deposit_enabled=chain_info.get('chainDeposit') == '1',
                             withdrawal_enabled=chain_info.get('chainWithdraw') == '1'
                         ))
@@ -89,8 +94,8 @@ class BybitExchange(BaseExchange):
         except Exception as e:
             raise Exception(f"Bybit 查詢幣種網路資訊失敗: {str(e)}")
     
-    async def get_all_coins_info(self) -> List[CoinInfo]:
-        """獲取所有幣種的完整資訊"""
+    async def get_all_coins_info(self) -> Tuple[List[RawCoinData], List[SearchableCoinInfo]]:
+        """獲取所有幣種的完整資訊，返回原始數據和搜索用數據"""
         self._ensure_auth()
         
         try:
@@ -103,45 +108,57 @@ class BybitExchange(BaseExchange):
             if response.get('retCode') != 0:
                 raise Exception(f"Bybit API 錯誤: {response.get('retMsg', 'Unknown error')}")
             
-            coins = []
+            raw_data = []
+            searchable_data = []
+            timestamp = datetime.now().isoformat()
+            
             for row in response.get('result', {}).get('rows', []):
                 symbol = row.get('coin', '')
                 if not symbol:
                     continue
                 
-                # 解析網路資訊
-                networks = []
+                # 創建原始數據
+                raw_coin = RawCoinData(
+                    exchange="bybit",
+                    raw_response=row,  # Bybit 回應已經是字典格式
+                    timestamp=timestamp
+                )
+                raw_data.append(raw_coin)
+                
+                # 創建搜索用數據
+                searchable_networks = []
                 for chain_info in row.get('chains', []):
                     # 安全轉換數值，處理空字串
                     withdraw_min_str = chain_info.get('withdrawMin', '')
                     withdraw_fee_str = chain_info.get('withdrawFee', '')
+                    deposit_min_str = chain_info.get('depositMin', '')
+                    withdraw_percentage_fee_str = chain_info.get('withdrawPercentageFee', '')
                     
                     # 如果 withdrawFee 為空，表示該幣不支持提現
                     withdrawal_fee_available = bool(withdraw_fee_str and withdraw_fee_str.strip())
                     
-                    networks.append(NetworkInfo(
+                    searchable_net = SearchableNetworkInfo(
                         network=chain_info.get('chain', ''),
-                        min_withdrawal=float(withdraw_min_str) if withdraw_min_str and withdraw_min_str.strip() else 0.0,
-                        withdrawal_fee=float(withdraw_fee_str) if withdrawal_fee_available else -1.0,  # -1 表示不支援提現
+                        chain_type=chain_info.get('chainType', None),  # Bybit 特有欄位
                         deposit_enabled=chain_info.get('chainDeposit') == '1',
                         withdrawal_enabled=withdrawal_fee_available and chain_info.get('chainWithdraw') == '1',
-                        contract_address=chain_info.get('contractAddress') if chain_info.get('contractAddress') else None,
-                        network_full_name=chain_info.get('chainType', chain_info.get('chain', '')),  # 使用 chainType 作為完整名稱
-                        browser_url=None  # Bybit 沒有提供這個資訊
-                    ))
+                        withdrawal_fee=float(withdraw_fee_str) if withdrawal_fee_available else 0.0,
+                        withdraw_percentage_fee=float(withdraw_percentage_fee_str) if withdraw_percentage_fee_str and withdraw_percentage_fee_str.strip() else None,
+                        min_deposit=float(deposit_min_str) if deposit_min_str and deposit_min_str.strip() else None,
+                        min_withdrawal=float(withdraw_min_str) if withdraw_min_str and withdraw_min_str.strip() else 0.0,
+                        contract_address=chain_info.get('contractAddress') if chain_info.get('contractAddress') else None
+                    )
+                    searchable_networks.append(searchable_net)
                 
-                # 創建 CoinInfo
-                coin = CoinInfo(
+                searchable_coin = SearchableCoinInfo(
+                    exchange="bybit",
                     symbol=symbol,
-                    full_name=row.get('name', symbol),
-                    trading_enabled=True,  # Bybit 沒有明確指出，假設支援
-                    deposit_all_enabled=any(chain.get('chainDeposit') == '1' for chain in row.get('chains', [])),
-                    withdrawal_all_enabled=any(chain.get('chainWithdraw') == '1' for chain in row.get('chains', [])),
-                    networks=networks
+                    name=row.get('name', symbol),
+                    networks=searchable_networks
                 )
-                coins.append(coin)
+                searchable_data.append(searchable_coin)
             
-            return coins
+            return raw_data, searchable_data
             
         except Exception as e:
             raise Exception(f"Bybit 查詢所有幣種資訊失敗: {str(e)}")

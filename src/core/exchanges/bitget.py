@@ -1,17 +1,18 @@
 import asyncio
-from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from .base import BaseExchange, NetworkInfo, CoinInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
 
 try:
     import sys
     import os
     # 添加 Bitget SDK 路徑
-    sdk_path = os.path.join(os.path.dirname(__file__), '..', '..', 'third-party', 'bitget-sdk')
+    sdk_path = os.path.join(os.path.dirname(__file__), '..', '..', 'third-party')
     if sdk_path not in sys.path:
-        sys.path.append(sdk_path)
+        sys.path.insert(0, sdk_path)  # 插入到最前面，優先使用本地 SDK
     
-    from v2.spot.market_api import MarketApi
-    from bitget_api import BitgetApi
+    from bitget.v2.spot.market_api import MarketApi
+    from bitget.bitget_api import BitgetApi
 except ImportError:
     # SDK 未安裝時的處理
     MarketApi = None
@@ -96,7 +97,12 @@ class BitgetExchange(BaseExchange):
             )
             
             if response.get('code') != '00000':
-                raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
+                # 如果是幣種不存在的錯誤，返回空列表而不是拋出異常
+                if response.get('code') == '40034':
+                    print(f"[Bitget] 幣種 {currency} 不存在")
+                    return []
+                else:
+                    raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
             
             networks = []
             for coin_info in response.get('data', []):
@@ -117,10 +123,14 @@ class BitgetExchange(BaseExchange):
             return networks
             
         except Exception as e:
+            # 如果異常訊息中包含 40034 錯誤碼，說明是幣種不存在
+            if '40034' in str(e) or '参数' in str(e):
+                print(f"[Bitget] 幣種 {currency} 不存在")
+                return []
             raise Exception(f"Bitget network query failed: {str(e)}")
     
-    async def get_all_coins_info(self) -> List[CoinInfo]:
-        """獲取所有幣種的完整資訊"""
+    async def get_all_coins_info(self) -> Tuple[List[RawCoinData], List[SearchableCoinInfo]]:
+        """獲取所有幣種的完整資訊，返回原始數據和搜索用數據"""
         self._ensure_auth()
         
         if not self._private_client:
@@ -136,38 +146,57 @@ class BitgetExchange(BaseExchange):
             if response.get('code') != '00000':
                 raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
             
-            coins = []
+            raw_data = []
+            searchable_data = []
+            timestamp = datetime.now().isoformat()
+            
+            total_coins = len(response.get('data', []))
+            
             for coin_info in response.get('data', []):
                 symbol = coin_info.get('coin', '')
                 if not symbol:
                     continue
                 
-                # 解析網路資訊
-                networks = []
+                # 創建原始數據
+                raw_coin = RawCoinData(
+                    exchange="bitget",
+                    raw_response=coin_info,  # Bitget 回應已經是字典格式
+                    timestamp=timestamp
+                )
+                raw_data.append(raw_coin)
+                
+                # 創建搜索用數據
+                searchable_networks = []
                 for chain_info in coin_info.get('chains', []):
-                    networks.append(NetworkInfo(
+                    # 安全轉換數值
+                    min_withdraw_str = chain_info.get('minWithdrawAmount', '0')
+                    withdraw_fee_str = chain_info.get('withdrawFee', '0')
+                    min_deposit_str = chain_info.get('minDepositAmount', '0')
+                    extra_withdraw_fee_str = chain_info.get('extraWithdrawFee', '0')
+                    
+                    searchable_net = SearchableNetworkInfo(
                         network=chain_info.get('chain', ''),
-                        min_withdrawal=float(chain_info.get('minWithdrawAmount', 0)),
-                        withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
                         deposit_enabled=chain_info.get('rechargeable') == 'true',
                         withdrawal_enabled=chain_info.get('withdrawable') == 'true',
-                        contract_address=chain_info.get('contractAddress'),
-                        network_full_name=chain_info.get('chain', ''),
-                        browser_url=chain_info.get('browserUrl')
-                    ))
+                        withdrawal_fee=float(withdraw_fee_str) if withdraw_fee_str else 0.0,
+                        extra_withdraw_fee=float(extra_withdraw_fee_str) if extra_withdraw_fee_str and extra_withdraw_fee_str != '0' else None,
+                        min_deposit=float(min_deposit_str) if min_deposit_str and min_deposit_str != '0' else None,
+                        min_withdrawal=float(min_withdraw_str) if min_withdraw_str else 0.0,
+                        contract_address=chain_info.get('contractAddress') if chain_info.get('contractAddress') else None,
+                        browser_url=chain_info.get('browserUrl') if chain_info.get('browserUrl') else None,
+                        congestion=chain_info.get('congestion') if chain_info.get('congestion') else None
+                    )
+                    searchable_networks.append(searchable_net)
                 
-                # 創建 CoinInfo
-                coin = CoinInfo(
+                searchable_coin = SearchableCoinInfo(
+                    exchange="bitget",
                     symbol=symbol,
-                    full_name=symbol,  # Bitget 沒有提供完整名稱
-                    trading_enabled=coin_info.get('transfer', 'true') == 'true',
-                    deposit_all_enabled=any(chain.get('rechargeable') == 'true' for chain in coin_info.get('chains', [])),
-                    withdrawal_all_enabled=any(chain.get('withdrawable') == 'true' for chain in coin_info.get('chains', [])),
-                    networks=networks
+                    name=symbol,  # Bitget 沒有提供完整名稱，使用符號
+                    networks=searchable_networks
                 )
-                coins.append(coin)
+                searchable_data.append(searchable_coin)
             
-            return coins
+            return raw_data, searchable_data
             
         except Exception as e:
             raise Exception(f"Bitget 查詢所有幣種資訊失敗: {str(e)}")

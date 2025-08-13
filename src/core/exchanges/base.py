@@ -75,6 +75,7 @@ class SearchableCoinInfo:
     exchange: str                             # 交易所名稱
     symbol: str                               # 幣種符號
     name: str                                 # 幣種名稱
+    denomination: Optional[int] = None        # 計價單位 (如 1000SATS 的 denomination=1000)
     
     # 網路列表
     networks: List[SearchableNetworkInfo] = field(default_factory=list)

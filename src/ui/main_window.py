@@ -19,7 +19,7 @@ from ..core.currency.coin_identifier import CoinIdentificationResult
 
 class EnhancedQueryWorker(QObject):
     """增強查詢工作器"""
-    finished = Signal(object)  # CoinIdentificationResult
+    finished = Signal(object, object)  # CoinIdentificationResult, SearchableCoinInfo數據
     error = Signal(str)  # 錯誤信息
     
     def __init__(self, exchange_manager, currency):
@@ -34,12 +34,12 @@ class EnhancedQueryWorker(QObject):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             
-            result = loop.run_until_complete(
+            result, searchable_data = loop.run_until_complete(
                 self.exchange_manager.enhanced_currency_query(self.currency)
             )
             
             loop.close()
-            self.finished.emit(result)
+            self.finished.emit(result, searchable_data)
             
         except Exception as e:
             import traceback
@@ -355,6 +355,9 @@ class MainWindow(QMainWindow):
         self.enhanced_worker.finished.connect(self.on_enhanced_query_completed)
         self.enhanced_worker.error.connect(self.on_enhanced_query_error)
         
+        # 顯示正在進行的訊息
+        self.log("🔍 正在從交易所獲取完整數據，這可能需要幾秒...")
+        
         # 使用QTimer在下一個事件循環中啟動
         QTimer.singleShot(0, self.enhanced_worker.run)
     
@@ -363,13 +366,17 @@ class MainWindow(QMainWindow):
         """處理增強查詢錯誤"""
         self.log(error_msg)
         self.hide_progress()
+        self.log("智能識別完成（發生錯誤）")
     
-    @Slot(object)
-    def on_enhanced_query_completed(self, result: CoinIdentificationResult):
+    @Slot(object, object)
+    def on_enhanced_query_completed(self, result: CoinIdentificationResult, searchable_data):
         """處理增強查詢結果"""
         print(f"[GUI DEBUG] on_enhanced_query_completed 被調用")
         print(f"[GUI DEBUG] result: {result}")
         print(f"[GUI DEBUG] result type: {type(result)}")
+        
+        # 快取 searchable 數據供後續使用
+        self._cached_searchable_data = searchable_data
         
         self.log("📍 進入智能識別結果處理")
         self.hide_progress()
@@ -482,15 +489,57 @@ class MainWindow(QMainWindow):
         self.results_table.setItem(row, 0, QTableWidgetItem(variant.exchange.upper()))
         self.results_table.setItem(row, 1, QTableWidgetItem(variant.symbol))
         self.results_table.setItem(row, 2, QTableWidgetItem(variant.network))
-        self.results_table.setItem(row, 3, QTableWidgetItem("N/A"))  # 需要額外查詢
-        self.results_table.setItem(row, 4, QTableWidgetItem("N/A"))  # 需要額外查詢
         
-        # 狀態顯示為匹配類型
-        self.results_table.setItem(row, 5, QTableWidgetItem(match_type))
+        # 嘗試從快取數據獲取真實的手續費、限額和狀態信息
+        min_withdrawal, withdrawal_fee, status = self._get_network_details_and_status(variant)
+        self.results_table.setItem(row, 3, QTableWidgetItem(f"{min_withdrawal:.8g}" if min_withdrawal is not None else "N/A"))
+        self.results_table.setItem(row, 4, QTableWidgetItem(f"{withdrawal_fee:.8g}" if withdrawal_fee is not None else "N/A"))
+        
+        # 狀態（正常/停止入金/停止出金）
+        self.results_table.setItem(row, 5, QTableWidgetItem(status if status else "未知"))
         
         # 合約地址和類型
         self.results_table.setItem(row, 6, QTableWidgetItem(variant.contract_address))
         self.results_table.setItem(row, 7, QTableWidgetItem("智能識別"))
+        
+    def _get_network_details(self, variant):
+        """從快取的搜索數據中獲取網路詳細資訊"""
+        # 如果沒有快取數據，返回None
+        if not hasattr(self, '_cached_searchable_data') or not self._cached_searchable_data:
+            return None, None
+            
+        exchange_data = self._cached_searchable_data.get(variant.exchange, [])
+        
+        for coin in exchange_data:
+            if coin.symbol == variant.symbol:
+                for network in coin.networks:
+                    if network.network == variant.network:
+                        return network.min_withdrawal, network.withdrawal_fee
+                        
+        return None, None
+        
+    def _get_network_details_and_status(self, variant):
+        """從快取的搜索數據中獲取網路詳細資訊和狀態"""
+        # 如果沒有快取數據，返回None
+        if not hasattr(self, '_cached_searchable_data') or not self._cached_searchable_data:
+            return None, None, None
+            
+        exchange_data = self._cached_searchable_data.get(variant.exchange, [])
+        
+        for coin in exchange_data:
+            if coin.symbol == variant.symbol:
+                for network in coin.networks:
+                    if network.network == variant.network:
+                        # 計算狀態（與傳統搜索相同的邏輯）
+                        status = "正常"
+                        if not network.deposit_enabled:
+                            status = "停止入金"
+                        elif not network.withdrawal_enabled:
+                            status = "停止出金"
+                            
+                        return network.min_withdrawal, network.withdrawal_fee, status
+                        
+        return None, None, None
             
     def clear_results(self):
         """清空結果表格"""
