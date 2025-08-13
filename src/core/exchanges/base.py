@@ -109,10 +109,6 @@ class BaseExchange(ABC):
         self.exchange_name = self.__class__.__name__.replace('Exchange', '').lower()
     
     # 公開端點 - 不需認證
-    @abstractmethod
-    async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
-        """獲取指定幣種支援的網路資訊"""
-        pass
     
     @abstractmethod
     async def get_all_coins_info(self) -> List[CoinInfo]:

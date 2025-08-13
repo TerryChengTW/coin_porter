@@ -37,66 +37,6 @@ class BinanceExchange(BaseExchange):
         
         self._client = Wallet(config_rest_api=configuration)
     
-    async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
-        """獲取指定幣種支援的網路資訊（需要認證）"""
-        self._ensure_auth()
-        
-        try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._client.rest_api.all_coins_information()
-            )
-            
-            data = response.data()
-            
-            # 尋找指定幣種（支持 denomination 匹配）
-            for coin_info in data:
-                coin_symbol = getattr(coin_info, 'coin', '')
-                
-                # 直接匹配
-                symbol_matches = coin_symbol == currency.upper()
-                
-                # 檢查 denomination 匹配
-                if not symbol_matches:
-                    network_list = getattr(coin_info, 'network_list', [])
-                    if network_list:
-                        first_net = network_list[0]
-                        denomination = getattr(first_net, 'denomination', None)
-                        if denomination and denomination > 1:
-                            # 如果幣種符號以 denomination 數字開頭，去掉前綴比較
-                            if coin_symbol.startswith(str(denomination)):
-                                base_symbol = coin_symbol[len(str(denomination)):]
-                                if base_symbol.upper() == currency.upper():
-                                    symbol_matches = True
-                            # 處理簡寫格式 (1M = 1,000,000)
-                            elif denomination == 1000000 and coin_symbol.startswith('1M'):
-                                base_symbol = coin_symbol[2:]  # 去掉 "1M"
-                                if base_symbol.upper() == currency.upper():
-                                    symbol_matches = True
-                
-                if symbol_matches:
-                    networks = []
-                    network_list = getattr(coin_info, 'network_list', [])
-                    for network_info in network_list:
-                        networks.append(NetworkInfo(
-                            network=getattr(network_info, 'network', ''),
-                            min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
-                            withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
-                            deposit_enabled=getattr(network_info, 'deposit_enable', False),
-                            withdrawal_enabled=getattr(network_info, 'withdraw_enable', False),
-                            contract_address=getattr(network_info, 'contract_address', None),
-                            network_full_name=getattr(network_info, 'name', None),
-                            browser_url=getattr(network_info, 'contract_address_url', None),
-                            actual_symbol=coin_symbol  # 設定實際找到的符號
-                        ))
-                    return networks
-            
-            return []  # 找不到該幣種
-            
-        except Exception as e:
-            raise Exception(f"Binance 查詢幣種網路資訊失敗: {str(e)}")
-    
     async def get_all_coins_info(self) -> Tuple[List[RawCoinData], List[SearchableCoinInfo]]:
         """獲取所有幣種的完整資訊，返回原始數據和搜索用數據"""
         self._ensure_auth()

@@ -52,46 +52,6 @@ class ExchangeManager:
                     exchange = ExchangeFactory.create(exchange_name, None)
                     self._exchanges[f"{exchange_name}_public"] = exchange
     
-    async def query_currency_support(self, currency: str) -> Dict[str, List[NetworkInfo]]:
-        """查詢所有交易所對指定幣種的支援情況
-        
-        Returns:
-            {"binance": [NetworkInfo(...), ...], "bybit": [...]}
-        """
-        # 確保公開查詢的交易所也被初始化
-        self._initialize_public_exchanges()
-        
-        results = {}
-        tasks = []
-        exchange_names = []
-        
-        # 準備所有查詢任務
-        for exchange_key, exchange in self._exchanges.items():
-            exchange_name = exchange_key.replace('_public', '')
-            tasks.append(exchange.get_currency_networks(currency))
-            exchange_names.append(exchange_name)
-        
-        if not tasks:
-            return results
-        
-        # 並行查詢所有交易所
-        try:
-            network_results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            for i, result in enumerate(network_results):
-                exchange_name = exchange_names[i]
-                
-                if isinstance(result, Exception):
-                    print(f"[錯誤] {exchange_name}: {str(result)}")
-                    results[exchange_name] = []
-                else:
-                    results[exchange_name] = result
-                    
-        except Exception as e:
-            print(f"[錯誤] 查詢幣種支援時發生錯誤: {str(e)}")
-        
-        return results
-    
     async def get_all_coins_data(self) -> Tuple[Dict[str, List[RawCoinData]], Dict[str, List[SearchableCoinInfo]]]:
         """一次性獲取所有交易所的完整幣種數據
         

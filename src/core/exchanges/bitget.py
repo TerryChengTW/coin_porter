@@ -52,53 +52,6 @@ class BitgetExchange(BaseExchange):
             first=False
         )
     
-    async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
-        """獲取指定幣種支援的網路資訊（需要認證）"""
-        self._ensure_auth()
-        
-        if not self._private_client:
-            raise Exception("Bitget client not available")
-        
-        try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._private_client.public_coins({"coin": currency.upper()})
-            )
-            
-            if response.get('code') != '00000':
-                # 如果是幣種不存在的錯誤，返回空列表而不是拋出異常
-                if response.get('code') == '40034':
-                    print(f"[Bitget] 幣種 {currency} 不存在")
-                    return []
-                else:
-                    raise Exception(f"Bitget API 錯誤: {response.get('msg', 'Unknown error')}")
-            
-            networks = []
-            for coin_info in response.get('data', []):
-                if coin_info.get('coin') == currency.upper():  # 使用 'coin' 而不是 'coinName'
-                    for chain_info in coin_info.get('chains', []):
-                        networks.append(NetworkInfo(
-                            network=chain_info.get('chain', ''),
-                            min_withdrawal=float(chain_info.get('minWithdrawAmount', 0)),
-                            withdrawal_fee=float(chain_info.get('withdrawFee', 0)),
-                            deposit_enabled=chain_info.get('rechargeable') == 'true',  # 字串比較
-                            withdrawal_enabled=chain_info.get('withdrawable') == 'true',  # 字串比較
-                            contract_address=chain_info.get('contractAddress'),
-                            network_full_name=chain_info.get('chain', ''),  # Bitget 沒有分離的完整名稱
-                            browser_url=chain_info.get('browserUrl')
-                        ))
-                    break
-            
-            return networks
-            
-        except Exception as e:
-            # 如果異常訊息中包含 40034 錯誤碼，說明是幣種不存在
-            if '40034' in str(e) or '参数' in str(e):
-                print(f"[Bitget] 幣種 {currency} 不存在")
-                return []
-            raise Exception(f"Bitget network query failed: {str(e)}")
-    
     async def get_all_coins_info(self) -> Tuple[List[RawCoinData], List[SearchableCoinInfo]]:
         """獲取所有幣種的完整資訊，返回原始數據和搜索用數據"""
         self._ensure_auth()
