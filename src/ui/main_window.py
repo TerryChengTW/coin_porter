@@ -395,8 +395,8 @@ class MainWindow(QMainWindow):
         original_currency = result.original_symbol
         
         for match in result.verified_matches:
-            # 如果這個匹配的符號與原始查詢的符號不同，就是額外發現的
-            if match.symbol != original_currency:
+            # 只顯示來源為智能識別且與原始查詢符號不同的匹配
+            if match.source == "smart" and match.symbol != original_currency:
                 additional_matches.append(match)
         
         # 顯示額外發現的匹配
@@ -461,9 +461,12 @@ class MainWindow(QMainWindow):
             row = self.results_table.rowCount()
             self.results_table.insertRow(row)
             
+            # 決定要顯示的幣種符號（優先使用實際符號）
+            display_symbol = network.actual_symbol if network.actual_symbol else currency
+            
             # 填入資料
             self.results_table.setItem(row, 0, QTableWidgetItem(exchange_name.upper()))
-            self.results_table.setItem(row, 1, QTableWidgetItem(currency))
+            self.results_table.setItem(row, 1, QTableWidgetItem(display_symbol))
             self.results_table.setItem(row, 2, QTableWidgetItem(network.network))
             self.results_table.setItem(row, 3, QTableWidgetItem(f"{network.min_withdrawal:.8g}"))
             self.results_table.setItem(row, 4, QTableWidgetItem(f"{network.withdrawal_fee:.8g}"))

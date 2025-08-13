@@ -25,6 +25,7 @@ class CoinVariant:
     network: str           # 網路名稱
     contract_address: str  # 合約地址
     is_verified: bool = True  # 是否已驗證為同一幣種
+    source: str = "smart"    # 來源標記: "traditional" 或 "smart"
 
 
 @dataclass

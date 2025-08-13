@@ -99,6 +99,11 @@ class BinanceExchange(BaseExchange):
                                 base_symbol = coin_symbol[len(str(denomination)):]
                                 if base_symbol.upper() == currency.upper():
                                     symbol_matches = True
+                            # 處理簡寫格式 (1M = 1,000,000)
+                            elif denomination == 1000000 and coin_symbol.startswith('1M'):
+                                base_symbol = coin_symbol[2:]  # 去掉 "1M"
+                                if base_symbol.upper() == currency.upper():
+                                    symbol_matches = True
                 
                 if symbol_matches:
                     networks = []
@@ -112,7 +117,8 @@ class BinanceExchange(BaseExchange):
                             withdrawal_enabled=getattr(network_info, 'withdraw_enable', False),
                             contract_address=getattr(network_info, 'contract_address', None),
                             network_full_name=getattr(network_info, 'name', None),
-                            browser_url=getattr(network_info, 'contract_address_url', None)
+                            browser_url=getattr(network_info, 'contract_address_url', None),
+                            actual_symbol=coin_symbol  # 設定實際找到的符號
                         ))
                     return networks
             

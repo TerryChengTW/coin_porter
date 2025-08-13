@@ -199,11 +199,16 @@ class ExchangeManager:
                 if coin.symbol.upper() == currency.upper():
                     symbol_matches = True
                 
-                # 檢查 denomination 匹配 (處理 1000SATS -> SATS 的情況)
+                # 檢查 denomination 匹配 (處理 1000SATS -> SATS, 1MBABYDOGE -> BABYDOGE 的情況)
                 elif coin.denomination and coin.denomination > 1:
                     # 如果幣種符號以 denomination 數字開頭，去掉前綴比較
                     if coin.symbol.startswith(str(coin.denomination)):
                         base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    # 處理簡寫格式 (1M = 1,000,000)
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]  # 去掉 "1M"
                         if base_symbol.upper() == currency.upper():
                             symbol_matches = True
                 
@@ -218,7 +223,8 @@ class ExchangeManager:
                             withdrawal_enabled=searchable_net.withdrawal_enabled,
                             contract_address=searchable_net.contract_address,
                             network_full_name=searchable_net.chain_type or searchable_net.network,
-                            browser_url=searchable_net.browser_url
+                            browser_url=searchable_net.browser_url,
+                            actual_symbol=coin.symbol  # 設定實際找到的符號
                         )
                         networks.append(network_info)
                     break
@@ -308,12 +314,15 @@ class ExchangeManager:
         
         for exchange_name, networks in traditional_results.items():
             for network in networks:
+                # 使用實際找到的符號，如果沒有則使用查詢符號
+                actual_symbol = network.actual_symbol if network.actual_symbol else currency.upper()
                 variants.append(CoinVariant(
                     exchange=exchange_name,
-                    symbol=currency.upper(),  # 使用查詢的幣種符號
+                    symbol=actual_symbol,
                     network=network.network,
                     contract_address=network.contract_address or "",
-                    is_verified=True
+                    is_verified=True,
+                    source="traditional"
                 ))
         
         return variants

@@ -14,6 +14,7 @@ class NetworkInfo:
     contract_address: Optional[str] = None
     network_full_name: Optional[str] = None  # 完整網路名稱
     browser_url: Optional[str] = None        # 區塊鏈瀏覽器URL
+    actual_symbol: Optional[str] = None      # 實際找到的幣種符號 (用於 denomination 情況)
 
 
 @dataclass
