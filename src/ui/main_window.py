@@ -15,6 +15,7 @@ from ..core.config.api_keys import APIKeyManager
 from ..core.config.exchanges_config import ExchangeConfigManager
 from ..core.exchanges.base import NetworkInfo
 from ..core.currency.coin_identifier import CoinIdentificationResult
+from ..core.utils.logger import set_ui_log_callback, log_debug
 
 
 class EnhancedQueryWorker(QObject):
@@ -61,6 +62,8 @@ class MainWindow(QMainWindow):
         self.config_manager = ExchangeConfigManager()
         self.exchange_manager = ExchangeManager(self.api_manager)
         
+        # 設定 logger UI 回呼
+        set_ui_log_callback(self.log_without_timestamp)
         
         self.setup_ui()
         self.setup_connections()
@@ -246,9 +249,9 @@ class MainWindow(QMainWindow):
     @Slot(object, object)
     def on_enhanced_query_completed(self, result: CoinIdentificationResult, searchable_data):
         """處理增強查詢結果"""
-        print(f"[GUI DEBUG] on_enhanced_query_completed 被調用")
-        print(f"[GUI DEBUG] result: {result}")
-        print(f"[GUI DEBUG] result type: {type(result)}")
+        log_debug("on_enhanced_query_completed 被調用")
+        log_debug(f"result: {result}")
+        log_debug(f"result type: {type(result)}")
         
         # 快取 searchable 數據供後續使用
         self._cached_searchable_data = searchable_data
@@ -406,7 +409,11 @@ class MainWindow(QMainWindow):
         
     
     def log(self, message: str):
-        """記錄訊息到日誌"""
+        """記錄訊息到日誌（帶時間戳）"""
+        self.log_text.append(f"[{self.get_timestamp()}] {message}")
+    
+    def log_without_timestamp(self, message: str):
+        """記錄訊息到日誌（不帶時間戳，供 logger 回呼使用）"""
         self.log_text.append(f"[{self.get_timestamp()}] {message}")
         
     def get_timestamp(self) -> str:

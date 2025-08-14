@@ -11,6 +11,11 @@ from dataclasses import dataclass
 # 注意：這裡使用相對導入來避免循環依賴
 if __name__ != '__main__':
     from ..exchanges.base import NetworkInfo, SearchableCoinInfo, SearchableNetworkInfo
+    from ..utils.logger import log_debug
+else:
+    # 如果作為主程式執行，提供假的 log_debug
+    def log_debug(msg):
+        print(f"[DEBUG] {msg}")
 
 
 @dataclass
@@ -143,15 +148,15 @@ class CoinIdentifier:
         Returns:
             CoinIdentificationResult: 包含傳統查詢和智能識別的完整結果
         """
-        print(f"[DEBUG] CoinIdentifier 開始識別幣種: {currency}")
+        log_debug(f"CoinIdentifier 開始識別幣種: {currency}")
         
         # 執行傳統查詢（直接符號匹配和 denomination 處理）
         traditional_results = self._search_from_cached_data(currency, searchable_data)
-        print(f"[DEBUG] 傳統查詢結果: {len(sum(traditional_results.values(), []))} 個網路")
+        log_debug(f"傳統查詢結果: {len(sum(traditional_results.values(), []))} 個網路")
         
         # 執行智能識別（基於合約地址的跨交易所匹配）
         smart_results = self._smart_identification_from_cached_data(currency, searchable_data)
-        print(f"[DEBUG] 智能識別結果: {len(smart_results)} 個額外匹配")
+        log_debug(f"智能識別結果: {len(smart_results)} 個額外匹配")
         
         # 合併結果
         all_matches = []
@@ -247,7 +252,7 @@ class CoinIdentifier:
                     for network in coin.networks:
                         traditional_found.add((exchange_name, coin.symbol, network.network))
         
-        print(f"[DEBUG] 智能識別：傳統查詢已找到 {len(traditional_found)} 個項目")
+        log_debug(f"智能識別：傳統查詢已找到 {len(traditional_found)} 個項目")
         
         # 收集所有合約地址映射（使用標準化網路名稱）
         for exchange_name, coins in searchable_data.items():
@@ -261,7 +266,7 @@ class CoinIdentifier:
                             contract_map[contract_key] = []
                         contract_map[contract_key].append((exchange_name, coin.symbol, network.network))
         
-        print(f"[DEBUG] 智能識別：收集到 {len(contract_map)} 個標準化合約地址映射")
+        log_debug(f"智能識別：收集到 {len(contract_map)} 個標準化合約地址映射")
         
         # 找出與輸入幣種相關的合約地址
         input_contracts = set()
@@ -289,7 +294,7 @@ class CoinIdentifier:
                             contract_key = f"{network.contract_address.lower()}_{std_network}"
                             input_contracts.add(contract_key)
         
-        print(f"[DEBUG] {currency} 相關的標準化合約地址: {len(input_contracts)} 個")
+        log_debug(f"{currency} 相關的標準化合約地址: {len(input_contracts)} 個")
         
         # 第一階段：找出所有使用相同合約地址的幣種
         related_symbols = set()
@@ -299,7 +304,7 @@ class CoinIdentifier:
                 for exchange, symbol, original_network in entries:
                     related_symbols.add(symbol.upper())
         
-        print(f"[DEBUG] 找到 {len(related_symbols)} 個相關幣種符號: {related_symbols}")
+        log_debug(f"找到 {len(related_symbols)} 個相關幣種符號: {related_symbols}")
         
         # 第二階段：獲取所有相關幣種的所有網路
         all_related_contracts = set()
@@ -312,7 +317,7 @@ class CoinIdentifier:
                             contract_key = f"{network.contract_address.lower()}_{std_network}"
                             all_related_contracts.add(contract_key)
         
-        print(f"[DEBUG] 擴展後總共有 {len(all_related_contracts)} 個相關合約地址")
+        log_debug(f"擴展後總共有 {len(all_related_contracts)} 個相關合約地址")
         
         # 第三階段：返回所有相關合約的所有變體（排除傳統查詢已找到的）
         for contract_key in all_related_contracts:
@@ -330,7 +335,7 @@ class CoinIdentifier:
                             source="smart"
                         ))
         
-        print(f"[DEBUG] 智能識別最終找到 {len(variants)} 個額外變體")
+        log_debug(f"智能識別最終找到 {len(variants)} 個額外變體")
         return variants
     
     def _convert_traditional_to_variants(self, traditional_results: Dict[str, List], currency: str) -> List[CoinVariant]:

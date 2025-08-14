@@ -6,6 +6,7 @@ import json
 import importlib
 from typing import Dict, List, Type, Optional
 from pathlib import Path
+from ..utils.logger import log_error
 
 
 class ExchangeConfig:
@@ -52,7 +53,7 @@ class ExchangeConfigManager:
             exchange_class = getattr(module, config.class_name)
             self._exchange_classes[config.name] = exchange_class
         except (ImportError, AttributeError) as e:
-            print(f"[警告] 無法載入交易所 {config.name}: {e}")
+            log_error(f"無法載入交易所 {config.name}: {e}")
     
     def get_enabled_exchanges(self) -> List[str]:
         """獲取啟用的交易所名稱列表"""

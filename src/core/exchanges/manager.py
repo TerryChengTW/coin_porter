@@ -4,6 +4,7 @@ from .base import BaseExchange, NetworkInfo, ExchangeFactory, RawCoinData, Searc
 from ..config.api_keys import APIKeyManager
 from ..config.exchanges_config import ExchangeConfigManager
 from ..currency.coin_identifier import CoinIdentifier, CoinIdentificationResult, CoinVariant, NetworkStandardizer
+from ..utils.logger import log_info, log_error, log_debug
 
 
 class ExchangeManager:
@@ -48,7 +49,7 @@ class ExchangeManager:
         Returns:
             Tuple[raw_data_by_exchange, searchable_data_by_exchange]: 原始數據和搜索用數據
         """
-        print(f"[DEBUG] get_all_coins_data 開始...")
+        log_debug("get_all_coins_data 開始...")
         
         raw_data_by_exchange = {}
         searchable_data_by_exchange = {}
@@ -72,17 +73,17 @@ class ExchangeManager:
                 exchange_name = exchange_names[i]
                 
                 if isinstance(result, Exception):
-                    print(f"[錯誤] {exchange_name}: {str(result)}")
+                    log_error(f"{exchange_name}: {str(result)}")
                     raw_data_by_exchange[exchange_name] = []
                     searchable_data_by_exchange[exchange_name] = []
                 else:
                     raw_data, searchable_data = result
                     raw_data_by_exchange[exchange_name] = raw_data
                     searchable_data_by_exchange[exchange_name] = searchable_data
-                    print(f"[成功] {exchange_name}: 獲取 {len(searchable_data)} 個幣種數據")
+                    log_info(f"{exchange_name}: 獲取 {len(searchable_data)} 個幣種數據")
                     
         except Exception as e:
-            print(f"[錯誤] 查詢所有幣種數據時發生錯誤: {str(e)}")
+            log_error(f"查詢所有幣種數據時發生錯誤: {str(e)}")
         
         return raw_data_by_exchange, searchable_data_by_exchange
 
@@ -95,17 +96,17 @@ class ExchangeManager:
         Returns:
             CoinIdentificationResult: 包含所有可能匹配的幣種及其網路資訊
         """
-        print(f"[DEBUG] enhanced_currency_query 開始，幣種: {currency}")
+        log_debug(f"enhanced_currency_query 開始，幣種: {currency}")
         
         # 一次性獲取所有交易所的完整數據
-        print(f"[DEBUG] 獲取所有交易所完整數據...")
+        log_debug("獲取所有交易所完整數據...")
         raw_data_by_exchange, searchable_data_by_exchange = await self.get_all_coins_data()
         
         # 使用重構後的 CoinIdentifier 統一處理
-        print(f"[DEBUG] 使用 CoinIdentifier 進行統一識別...")
+        log_debug("使用 CoinIdentifier 進行統一識別...")
         identification_result = self.coin_identifier.identify_currency(currency, searchable_data_by_exchange)
         
-        print(f"[DEBUG] 最終結果: {len(identification_result.verified_matches)} 個驗證匹配")
+        log_debug(f"最終結果: {len(identification_result.verified_matches)} 個驗證匹配")
         return identification_result, searchable_data_by_exchange
     
     # 重複的業務邏輯已移動到 CoinIdentifier 中
