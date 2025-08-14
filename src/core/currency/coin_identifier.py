@@ -1,13 +1,16 @@
 """
-雙路線幣種識別模組
-實現基於合約地址的深度查詢和同名驗證的雙重策略
+幣種識別與網路標準化模組
+提供跨交易所的幣種智能識別和網路名稱標準化功能
 """
 
-import json
 import re
-from typing import Dict, List, Set, Optional, Tuple, Union
-from dataclasses import dataclass, asdict
-from pathlib import Path
+from typing import Dict, List, Set, Optional, Tuple
+from dataclasses import dataclass
+
+# 導入必要的數據結構
+# 注意：這裡使用相對導入來避免循環依賴
+if __name__ != '__main__':
+    from ..exchanges.base import NetworkInfo, SearchableCoinInfo, SearchableNetworkInfo
 
 
 @dataclass
@@ -123,447 +126,246 @@ class NetworkStandardizer:
         return mapping.aliases if mapping else [standard_name]
 
 
-class ContractAddressDatabase:
-    """合約地址資料庫"""
-    
-    def __init__(self):
-        self.contracts: Dict[str, Dict[str, str]] = {}  # {contract_address: {network: symbol}}
-        self.symbols: Dict[str, Dict[str, str]] = {}    # {symbol: {network: contract_address}}
-        
-    def add_contract(self, symbol: str, network: str, contract_address: str, exchange: str):
-        """添加合約地址資訊"""
-        if not contract_address or contract_address.lower() in ['null', 'none', '']:
-            return
-            
-        # 標準化網路名稱
-        standardizer = NetworkStandardizer()
-        std_network = standardizer.standardize_network(network)
-        
-        # 建立合約索引
-        if contract_address not in self.contracts:
-            self.contracts[contract_address] = {}
-        self.contracts[contract_address][std_network] = symbol
-        
-        # 建立幣種索引
-        if symbol not in self.symbols:
-            self.symbols[symbol] = {}
-        self.symbols[symbol][std_network] = contract_address
-        
-    def find_symbols_by_contract(self, contract_address: str, network: str) -> List[str]:
-        """根據合約地址查找可能的幣種符號"""
-        standardizer = NetworkStandardizer()
-        std_network = standardizer.standardize_network(network)
-        
-        if contract_address in self.contracts:
-            if std_network in self.contracts[contract_address]:
-                return [self.contracts[contract_address][std_network]]
-                
-        return []
-    
-    def find_contracts_by_symbol(self, symbol: str) -> Dict[str, str]:
-        """根據幣種符號查找所有網路的合約地址"""
-        return self.symbols.get(symbol, {})
-    
-    def get_all_symbols_for_contract(self, contract_address: str) -> Dict[str, str]:
-        """獲取指定合約地址在所有網路上的幣種符號"""
-        return self.contracts.get(contract_address, {})
-
-
 class CoinIdentifier:
-    """雙路線幣種識別器"""
+    """跨交易所幣種識別器"""
     
     def __init__(self):
         self.network_standardizer = NetworkStandardizer()
-        self.contract_db = ContractAddressDatabase()
-        self._load_contract_mappings()
-        
-    def _load_contract_mappings(self):
-        """載入合約映射資料"""
-        # 動態從API回應檔案載入合約映射，或使用預設映射
-        try:
-            contract_mappings = self._load_from_api_responses()
-            print(f"[INFO] 從 API 回應檔案載入了 {len(contract_mappings)} 個映射關係")
-        except Exception as e:
-            print(f"[WARN] 無法從 API 回應檔案載入映射，使用預設映射: {e}")
-            contract_mappings = self._get_default_contract_mappings()
-            
-        
-        # 為每個映射組添加所有變體
-        for mapping in contract_mappings:
-            contract = mapping["contract"]
-            network = mapping["network"]
-            
-            # 為每個變體添加映射
-            for symbol, exchanges in mapping["variants"]:
-                for exchange in exchanges:
-                    self.contract_db.add_contract(symbol, network, contract, exchange)
     
-    def _load_from_api_responses(self):
-        """從 API 回應檔案動態載入合約映射"""
-        api_responses_dir = Path(__file__).parent.parent.parent.parent / "docs" / "api-response-examples"
-        contract_mappings = []
-        
-        # 檢查目錄是否存在
-        if not api_responses_dir.exists():
-            raise FileNotFoundError(f"API 回應檔案目錄不存在: {api_responses_dir}")
-        
-        # 載入各交易所數據
-        exchange_data = {}
-        
-        # Binance
-        binance_file = api_responses_dir / "binance" / "all_coins_information_full_response.json"
-        if binance_file.exists():
-            with open(binance_file, 'r', encoding='utf-8') as f:
-                exchange_data['binance'] = json.load(f)
-        
-        # Bybit  
-        bybit_file = api_responses_dir / "bybit" / "coin_info_full_response.json"
-        if bybit_file.exists():
-            with open(bybit_file, 'r', encoding='utf-8') as f:
-                bybit_data = json.load(f)
-                exchange_data['bybit'] = bybit_data.get('result', {}).get('rows', [])
-        
-        # Bitget
-        bitget_file = api_responses_dir / "bitget" / "public_coins_full_response.json"
-        if bitget_file.exists():
-            with open(bitget_file, 'r', encoding='utf-8') as f:
-                bitget_data = json.load(f)
-                exchange_data['bitget'] = bitget_data.get('data', [])
-        
-        # 分析合約地址映射
-        contract_mappings = self._analyze_contract_mappings(exchange_data)
-        
-        return contract_mappings
-    
-    def _analyze_contract_mappings(self, exchange_data: Dict) -> List[Dict]:
-        """分析交易所數據，找出合約地址映射關係"""
-        contract_map = {}  # {contract_address: {network: [(symbol, exchange)]}}
-        
-        # 處理 Binance 數據
-        if 'binance' in exchange_data:
-            for coin in exchange_data['binance']:
-                symbol = coin['coin']
-                for network in coin.get('network_list', []):
-                    contract = network.get('contract_address')
-                    if contract and contract.lower() not in ['null', 'none', '']:
-                        net_name = network['network']
-                        # 標準化合約地址為小寫和網路名稱
-                        contract = contract.lower()
-                        std_net_name = self.network_standardizer.standardize_network(net_name)
-                        key = f"{contract}_{std_net_name}"
-                        
-                        if key not in contract_map:
-                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
-                        
-                        if symbol not in contract_map[key]['variants']:
-                            contract_map[key]['variants'][symbol] = []
-                        contract_map[key]['variants'][symbol].append('binance')
-        
-        # 處理 Bybit 數據
-        if 'bybit' in exchange_data:
-            for coin in exchange_data['bybit']:
-                symbol = coin['coin']
-                for chain in coin.get('chains', []):
-                    contract = chain.get('contractAddress')
-                    net_name = chain['chain']
-                    std_net_name = self.network_standardizer.standardize_network(net_name)
-                    
-                    # 特殊處理 BRC20 代幣
-                    if std_net_name in ['BRC20', 'BTC'] and not contract:
-                        # 對於 BRC20 代幣，使用幣種符號的小寫作為標識符
-                        contract = symbol.lower()
-                    
-                    if contract and str(contract).lower() not in ['null', 'none', '']:
-                        # 標準化合約地址為小寫
-                        contract = str(contract).lower()
-                        key = f"{contract}_{std_net_name}"
-                        
-                        if key not in contract_map:
-                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
-                        
-                        if symbol not in contract_map[key]['variants']:
-                            contract_map[key]['variants'][symbol] = []
-                        contract_map[key]['variants'][symbol].append('bybit')
-        
-        # 處理 Bitget 數據
-        if 'bitget' in exchange_data:
-            for coin in exchange_data['bitget']:
-                symbol = coin['coin']
-                for chain in coin.get('chains', []):
-                    contract = chain.get('contractAddress')
-                    net_name = chain['chain']
-                    std_net_name = self.network_standardizer.standardize_network(net_name)
-                    
-                    # 特殊處理 BRC20 代幣
-                    if std_net_name in ['BRC20', 'BTC'] and not contract:
-                        # 對於 BRC20 代幣，使用幣種符號的小寫作為標識符
-                        contract = symbol.lower()
-                    
-                    if contract and str(contract).lower() not in ['null', 'none', '']:
-                        # 標準化合約地址為小寫
-                        contract = str(contract).lower()
-                        key = f"{contract}_{std_net_name}"
-                        
-                        if key not in contract_map:
-                            contract_map[key] = {'contract': contract, 'network': std_net_name, 'variants': {}}
-                        
-                        if symbol not in contract_map[key]['variants']:
-                            contract_map[key]['variants'][symbol] = []
-                        contract_map[key]['variants'][symbol].append('bitget')
-        
-        # 轉換為標準格式，只保留有多個變體的映射
-        mappings = []
-        for key, data in contract_map.items():
-            if len(data['variants']) > 1:  # 只保留有多個符號變體的合約
-                variants = []
-                for symbol, exchanges in data['variants'].items():
-                    variants.append((symbol, exchanges))
-                
-                mappings.append({
-                    'contract': data['contract'],
-                    'network': data['network'], 
-                    'variants': variants
-                })
-        
-        return mappings
-    
-    def _get_default_contract_mappings(self):
-        """獲取預設的硬編碼合約映射（作為備用）"""
-        return [
-            # CAT/1000CAT - BSC網路
-            {
-                "contract": "0x6894cde390a3f51155ea41ed24a33a4827d3063d",
-                "network": "BSC", 
-                "variants": [
-                    ("CAT", ["bybit"]),
-                    ("1000CAT", ["binance"])
-                ]
-            },
-            # SATS/1000SATS - BRC20網路
-            {
-                "contract": "sats",
-                "network": "BRC20",
-                "variants": [
-                    ("SATS", ["bitget", "bybit"]),
-                    ("1000SATS", ["binance"])
-                ]
-            },
-            # BABYDOGE/1MBABYDOGE - BSC網路
-            {
-                "contract": "0xc748673057861a797275cd8a068abb95a902e8de",
-                "network": "BSC",
-                "variants": [
-                    ("BABYDOGE", ["bybit"]),
-                    ("1MBABYDOGE", ["binance"])
-                ]
-            },
-            # BEAM/BEAMX - ETH網路  
-            {
-                "contract": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
-                "network": "ETH",
-                "variants": [
-                    ("BEAM", ["bybit"]),
-                    ("BEAMX", ["binance"])
-                ]
-            },
-            # BTT/BTTC - TRX網路
-            {
-                "contract": "TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
-                "network": "TRX", 
-                "variants": [
-                    ("BTT", ["bybit"]),
-                    ("BTTC", ["binance"])
-                ]
-            },
-            # NEIRO/NEIROCTO - ETH網路
-            {
-                "contract": "0x812ba41e071c7b7fa4ebcfb62df5f45f6fa853ee",
-                "network": "ETH",
-                "variants": [
-                    ("NEIRO", ["binance"]),
-                    ("NEIROCTO", ["bybit"])
-                ]
-            },
-            # ZEROLEND/ZERO - LINEA網路
-            {
-                "contract": "0x78354f8dccb269a615a7e0a24f9b0718fdc3c7a7",
-                "network": "LINEA",
-                "variants": [
-                    ("ZEROLEND", ["bitget"]),
-                    ("ZERO", ["bybit"])
-                ]
-            }
-        ]
-    
-    def identify_coin(self, input_symbol: str, exchange_data: Dict[str, List]) -> CoinIdentificationResult:
+    def identify_currency(self, currency: str, searchable_data: Dict[str, List]) -> CoinIdentificationResult:
         """
-        雙路線幣種識別
+        統一的幣種識別介面
         
         Args:
-            input_symbol: 用戶輸入的幣種符號
-            exchange_data: 各交易所的查詢結果 {"binance": [NetworkInfo, ...], ...}
+            currency: 用戶輸入的幣種符號
+            searchable_data: 各交易所的 SearchableCoinInfo 數據
             
         Returns:
-            CoinIdentificationResult: 識別結果
+            CoinIdentificationResult: 包含傳統查詢和智能識別的完整結果
         """
-        input_symbol = input_symbol.upper()
-        print(f"[DEBUG] identify_coin 開始，輸入符號: {input_symbol}")
-        print(f"[DEBUG] 交易所數據: {exchange_data}")
+        print(f"[DEBUG] CoinIdentifier 開始識別幣種: {currency}")
         
-        # 路線一：基於合約地址的深度查詢
-        print(f"[DEBUG] 執行路線一：合約地址深度查詢")
-        route1_results = self._contract_based_search(input_symbol, exchange_data)
-        print(f"[DEBUG] 路線一結果: {len(route1_results[0])} 驗證匹配, {len(route1_results[1])} 除錯")
+        # 執行傳統查詢（直接符號匹配和 denomination 處理）
+        traditional_results = self._search_from_cached_data(currency, searchable_data)
+        print(f"[DEBUG] 傳統查詢結果: {len(sum(traditional_results.values(), []))} 個網路")
         
-        # 路線二：基於同名的驗證查詢  
-        print(f"[DEBUG] 執行路線二：同名驗證查詢")
-        route2_results = self._same_name_validation(input_symbol, exchange_data)
-        print(f"[DEBUG] 路線二結果: {len(route2_results[0])} 驗證匹配, {len(route2_results[1])} 除錯")
+        # 執行智能識別（基於合約地址的跨交易所匹配）
+        smart_results = self._smart_identification_from_cached_data(currency, searchable_data)
+        print(f"[DEBUG] 智能識別結果: {len(smart_results)} 個額外匹配")
         
-        # 合併並去重結果
-        print(f"[DEBUG] 合併結果")
-        final_result = self._merge_results(input_symbol, route1_results, route2_results)
-        print(f"[DEBUG] 最終結果: {len(final_result.verified_matches)} 驗證, {len(final_result.possible_matches)} 可能")
+        # 合併結果
+        all_matches = []
+        all_matches.extend(self._convert_traditional_to_variants(traditional_results, currency))
+        all_matches.extend(smart_results)
         
-        return final_result
+        # 去重處理
+        verified_matches = self._deduplicate_matches(all_matches)
+        
+        return CoinIdentificationResult(
+            original_symbol=currency,
+            verified_matches=verified_matches,
+            possible_matches=[],
+            debug_info=[]
+        )
     
-    def _contract_based_search(self, symbol: str, exchange_data: Dict) -> Tuple[List[CoinVariant], List[Dict]]:
-        """路線一：基於合約地址的深度查詢"""
+    def _search_from_cached_data(self, currency: str, searchable_data: Dict[str, List]) -> Dict[str, List]:
+        """從快取的 searchable 數據中搜索特定幣種（傳統查詢）"""
+        results = {}
+        
+        for exchange_name, coins in searchable_data.items():
+            networks = []
+            for coin in coins:
+                # 檢查是否匹配：直接匹配或去除 denomination 後匹配
+                symbol_matches = False
+                
+                # 直接匹配
+                if coin.symbol.upper() == currency.upper():
+                    symbol_matches = True
+                
+                # 檢查 denomination 匹配 (處理 1000SATS -> SATS, 1MBABYDOGE -> BABYDOGE 的情況)
+                elif coin.denomination and coin.denomination > 1:
+                    # 如果幣種符號以 denomination 數字開頭，去掉前綴比較
+                    if coin.symbol.startswith(str(coin.denomination)):
+                        base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    # 處理簡寫格式 (1M = 1,000,000)
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]  # 去掉 "1M"
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                
+                if symbol_matches:
+                    # 轉換 SearchableNetworkInfo 為 NetworkInfo
+                    for searchable_net in coin.networks:
+                        from ..exchanges.base import NetworkInfo
+                        network_info = NetworkInfo(
+                            network=searchable_net.network,
+                            min_withdrawal=searchable_net.min_withdrawal,
+                            withdrawal_fee=searchable_net.withdrawal_fee,
+                            deposit_enabled=searchable_net.deposit_enabled,
+                            withdrawal_enabled=searchable_net.withdrawal_enabled,
+                            contract_address=searchable_net.contract_address,
+                            network_full_name=searchable_net.chain_type or searchable_net.network,
+                            browser_url=searchable_net.browser_url,
+                            actual_symbol=coin.symbol  # 設定實際找到的符號
+                        )
+                        networks.append(network_info)
+                    break
+            results[exchange_name] = networks
+        
+        return results
+    
+    def _smart_identification_from_cached_data(self, currency: str, searchable_data: Dict[str, List]) -> List[CoinVariant]:
+        """從快取數據執行智能識別（基於合約地址的跨交易所匹配），排除傳統查詢已找到的項目"""
+        contract_map = {}  # {standardized_contract_key: [(exchange, symbol, original_network)]}
+        variants = []
+        
+        # 首先獲取傳統查詢的結果，用於過濾重複項
+        traditional_found = set()  # (exchange, symbol, network)
+        for exchange_name, coins in searchable_data.items():
+            for coin in coins:
+                # 檢查是否匹配：直接匹配或去除 denomination 後匹配
+                symbol_matches = False
+                
+                # 直接匹配
+                if coin.symbol.upper() == currency.upper():
+                    symbol_matches = True
+                
+                # 檢查 denomination 匹配
+                elif coin.denomination and coin.denomination > 1:
+                    if coin.symbol.startswith(str(coin.denomination)):
+                        base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                
+                if symbol_matches:
+                    for network in coin.networks:
+                        traditional_found.add((exchange_name, coin.symbol, network.network))
+        
+        print(f"[DEBUG] 智能識別：傳統查詢已找到 {len(traditional_found)} 個項目")
+        
+        # 收集所有合約地址映射（使用標準化網路名稱）
+        for exchange_name, coins in searchable_data.items():
+            for coin in coins:
+                for network in coin.networks:
+                    if network.contract_address:
+                        # 使用標準化網路名稱
+                        std_network = self.network_standardizer.standardize_network(network.network)
+                        contract_key = f"{network.contract_address.lower()}_{std_network}"
+                        if contract_key not in contract_map:
+                            contract_map[contract_key] = []
+                        contract_map[contract_key].append((exchange_name, coin.symbol, network.network))
+        
+        print(f"[DEBUG] 智能識別：收集到 {len(contract_map)} 個標準化合約地址映射")
+        
+        # 找出與輸入幣種相關的合約地址
+        input_contracts = set()
+        for exchange_name, coins in searchable_data.items():
+            for coin in coins:
+                # 檢查所有可能匹配的符號
+                symbol_matches = False
+                
+                if coin.symbol.upper() == currency.upper():
+                    symbol_matches = True
+                elif coin.denomination and coin.denomination > 1:
+                    if coin.symbol.startswith(str(coin.denomination)):
+                        base_symbol = coin.symbol[len(str(coin.denomination)):]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                    elif coin.denomination == 1000000 and coin.symbol.startswith('1M'):
+                        base_symbol = coin.symbol[2:]
+                        if base_symbol.upper() == currency.upper():
+                            symbol_matches = True
+                
+                if symbol_matches:
+                    for network in coin.networks:
+                        if network.contract_address:
+                            std_network = self.network_standardizer.standardize_network(network.network)
+                            contract_key = f"{network.contract_address.lower()}_{std_network}"
+                            input_contracts.add(contract_key)
+        
+        print(f"[DEBUG] {currency} 相關的標準化合約地址: {len(input_contracts)} 個")
+        
+        # 第一階段：找出所有使用相同合約地址的幣種
+        related_symbols = set()
+        for contract_key in input_contracts:
+            if contract_key in contract_map:
+                entries = contract_map[contract_key]
+                for exchange, symbol, original_network in entries:
+                    related_symbols.add(symbol.upper())
+        
+        print(f"[DEBUG] 找到 {len(related_symbols)} 個相關幣種符號: {related_symbols}")
+        
+        # 第二階段：獲取所有相關幣種的所有網路
+        all_related_contracts = set()
+        for exchange_name, coins in searchable_data.items():
+            for coin in coins:
+                if coin.symbol.upper() in related_symbols:
+                    for network in coin.networks:
+                        if network.contract_address:
+                            std_network = self.network_standardizer.standardize_network(network.network)
+                            contract_key = f"{network.contract_address.lower()}_{std_network}"
+                            all_related_contracts.add(contract_key)
+        
+        print(f"[DEBUG] 擴展後總共有 {len(all_related_contracts)} 個相關合約地址")
+        
+        # 第三階段：返回所有相關合約的所有變體（排除傳統查詢已找到的）
+        for contract_key in all_related_contracts:
+            if contract_key in contract_map:
+                entries = contract_map[contract_key]
+                for exchange, symbol, original_network in entries:
+                    # 檢查是否已被傳統查詢找到
+                    if (exchange, symbol, original_network) not in traditional_found:
+                        variants.append(CoinVariant(
+                            exchange=exchange,
+                            symbol=symbol,
+                            network=original_network,
+                            contract_address=contract_key.split('_')[0],
+                            is_verified=True,
+                            source="smart"
+                        ))
+        
+        print(f"[DEBUG] 智能識別最終找到 {len(variants)} 個額外變體")
+        return variants
+    
+    def _convert_traditional_to_variants(self, traditional_results: Dict[str, List], currency: str) -> List[CoinVariant]:
+        """將傳統查詢結果轉換為 CoinVariant 格式"""
+        variants = []
+        
+        for exchange_name, networks in traditional_results.items():
+            for network in networks:
+                # 使用實際找到的符號，如果沒有則使用查詢符號
+                actual_symbol = network.actual_symbol if network.actual_symbol else currency.upper()
+                variants.append(CoinVariant(
+                    exchange=exchange_name,
+                    symbol=actual_symbol,
+                    network=network.network,
+                    contract_address=network.contract_address or "",
+                    is_verified=True,
+                    source="traditional"
+                ))
+        
+        return variants
+    
+    def _deduplicate_matches(self, matches: List[CoinVariant]) -> List[CoinVariant]:
+        """去重處理"""
+        seen = set()
         verified_matches = []
-        debug_info = []
         
-        print(f"[DEBUG] 路線一開始，符號: {symbol}")
-        
-        # 從已知映射中查找可能的別名
-        possible_symbols = self.get_possible_symbols(symbol)
-        print(f"[DEBUG] 路線一找到可能的符號: {possible_symbols}")
-        
-        # 對每個可能的符號檢查是否有實際的查詢結果
-        for test_symbol in possible_symbols:
-            print(f"[DEBUG] 檢查符號: {test_symbol}")
+        for match in matches:
+            # 使用更寬鬆的去重鍵
+            if match.contract_address and match.contract_address.strip():
+                key = (match.exchange, match.symbol, match.network, match.contract_address.lower())
+            else:
+                key = (match.exchange, match.symbol, match.network)
             
-            # 查找使用這個符號的映射資訊
-            for mapping in self._get_contract_mappings():
-                mapping_symbols = [variant[0] for variant in mapping["variants"]]
-                if test_symbol in mapping_symbols:
-                    print(f"[DEBUG] 找到 {test_symbol} 的映射資訊")
-                    
-                    # 找到該符號對應的交易所
-                    for variant_symbol, exchanges in mapping["variants"]:
-                        if variant_symbol == test_symbol:
-                            for exchange in exchanges:
-                                print(f"[DEBUG] 創建 CoinVariant: {exchange} - {test_symbol}")
-                                verified_matches.append(CoinVariant(
-                                    exchange=exchange,
-                                    symbol=test_symbol,
-                                    network=mapping["network"],
-                                    contract_address=mapping["contract"],
-                                    is_verified=True
-                                ))
-            
-        print(f"[DEBUG] 路線一完成，找到 {len(verified_matches)} 個匹配")
-        return verified_matches, debug_info
-    
-    def _same_name_validation(self, symbol: str, exchange_data: Dict) -> Tuple[List[CoinVariant], List[Dict]]:
-        """路線二：基於同名的驗證查詢"""
-        verified_matches = []
-        debug_info = []
+            if key not in seen:
+                seen.add(key)
+                verified_matches.append(match)
         
-        # 收集所有同名結果
-        same_name_results = {}
-        for exchange, networks in exchange_data.items():
-            if networks:  # 有找到結果
-                same_name_results[exchange] = networks
-        
-        if len(same_name_results) < 2:
-            return verified_matches, debug_info
-        
-        # 檢查網路和合約地址的一致性
-        exchanges = list(same_name_results.keys())
-        for i in range(len(exchanges)):
-            for j in range(i + 1, len(exchanges)):
-                ex1, ex2 = exchanges[i], exchanges[j]
-                matches, conflicts = self._compare_exchange_networks(
-                    ex1, same_name_results[ex1], 
-                    ex2, same_name_results[ex2], 
-                    symbol
-                )
-                verified_matches.extend(matches)
-                debug_info.extend(conflicts)
-        
-        return verified_matches, debug_info
-    
-    def _compare_exchange_networks(self, ex1: str, networks1: List, ex2: str, networks2: List, symbol: str) -> Tuple[List[CoinVariant], List[Dict]]:
-        """比較兩個交易所的網路支援情況"""
-        matches = []
-        conflicts = []
-        
-        # 建立網路映射
-        net1_map = {}  # {standard_network: NetworkInfo}
-        net2_map = {}
-        
-        for net_info in networks1:
-            std_net = self.network_standardizer.standardize_network(net_info.network)
-            net1_map[std_net] = net_info
-            
-        for net_info in networks2:
-            std_net = self.network_standardizer.standardize_network(net_info.network)
-            net2_map[std_net] = net_info
-        
-        # 找出共同支援的網路
-        common_networks = set(net1_map.keys()) & set(net2_map.keys())
-        
-        for std_network in common_networks:
-            # 這裡需要檢查合約地址是否相同
-            # 由於NetworkInfo沒有包含合約地址，先標記為已驗證
-            # TODO: 需要擴展NetworkInfo包含合約地址資訊
-            matches.append(CoinVariant(
-                exchange=ex1,
-                symbol=symbol, 
-                network=std_network,
-                contract_address="",  # TODO: 從實際數據獲取
-                is_verified=True
-            ))
-        
-        return matches, conflicts
-    
-    
-    def get_possible_symbols(self, symbol: str) -> Set[str]:
-        """獲取可能的幣種符號別名"""
-        possible_symbols = {symbol.upper()}
-        
-        # 從合約地址資料庫查找
-        symbol_contracts = self.contract_db.find_contracts_by_symbol(symbol.upper())
-        for network, contract in symbol_contracts.items():
-            # 找出使用相同合約地址的所有符號
-            other_symbols = self.contract_db.get_all_symbols_for_contract(contract)
-            for net, sym in other_symbols.items():
-                std_net = self.network_standardizer.standardize_network(net)
-                if std_net == network:
-                    possible_symbols.add(sym)
-        
-        # 反向查找：從已知映射中尋找
-        for mapping in self._get_contract_mappings():
-            contract = mapping["contract"]
-            std_network = mapping["network"]
-            
-            # 檢查當前符號是否在這個映射組中
-            mapping_symbols = [variant[0] for variant in mapping["variants"]]
-            if symbol.upper() in mapping_symbols:
-                # 添加同組的所有其他符號
-                possible_symbols.update(mapping_symbols)
-        
-        return possible_symbols
-    
-    def _get_contract_mappings(self):
-        """獲取合約映射配置"""
-        # 使用相同的動態載入邏輯，或預設映射
-        try:
-            return self._load_from_api_responses()
-        except Exception:
-            return self._get_default_contract_mappings()
-
-
-def create_coin_identifier() -> CoinIdentifier:
-    """創建幣種識別器實例"""
-    return CoinIdentifier()
+        return verified_matches
