@@ -8,14 +8,8 @@ from typing import Dict, List, Set, Optional, Tuple
 from dataclasses import dataclass
 
 # 導入必要的數據結構
-# 注意：這裡使用相對導入來避免循環依賴
-if __name__ != '__main__':
-    from ..exchanges.base import NetworkInfo, SearchableCoinInfo, SearchableNetworkInfo
-    from ..utils.logger import log_debug
-else:
-    # 如果作為主程式執行，提供假的 log_debug
-    def log_debug(msg):
-        print(f"[DEBUG] {msg}")
+from ..exchanges.base import NetworkInfo, SearchableCoinInfo, SearchableNetworkInfo
+from ..utils.logger import log_debug
 
 
 @dataclass
