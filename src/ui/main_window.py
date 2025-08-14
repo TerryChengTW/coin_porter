@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QComboBox, QPushButton, QTextEdit, QSplitter,
     QGroupBox, QProgressBar, QTabWidget, QTableWidget,
-    QTableWidgetItem, QHeaderView
+    QTableWidgetItem, QHeaderView, QCheckBox
 )
 from PySide6.QtCore import Qt, QThread, Signal, QTimer, Slot, QObject
 from PySide6.QtGui import QFont, QIcon
@@ -23,10 +23,11 @@ class EnhancedQueryWorker(QObject):
     finished = Signal(object, object)  # CoinIdentificationResult, SearchableCoinInfo數據
     error = Signal(str)  # 錯誤信息
     
-    def __init__(self, exchange_manager, currency):
+    def __init__(self, exchange_manager, currency, selected_exchanges=None):
         super().__init__()
         self.exchange_manager = exchange_manager
         self.currency = currency
+        self.selected_exchanges = selected_exchanges
     
     def run(self):
         """執行查詢"""
@@ -36,7 +37,7 @@ class EnhancedQueryWorker(QObject):
             asyncio.set_event_loop(loop)
             
             result, searchable_data = loop.run_until_complete(
-                self.exchange_manager.enhanced_currency_query(self.currency)
+                self.exchange_manager.enhanced_currency_query(self.currency, self.selected_exchanges)
             )
             
             loop.close()
@@ -110,11 +111,34 @@ class MainWindow(QMainWindow):
         control_layout = QHBoxLayout(control_group)
         
         # 交易所選擇
-        control_layout.addWidget(QLabel("交易所:"))
-        self.exchange_combo = QComboBox()
-        exchange_names = ["所有交易所"] + self.config_manager.get_exchange_names()
-        self.exchange_combo.addItems(exchange_names)
-        control_layout.addWidget(self.exchange_combo)
+        exchange_group = QGroupBox("交易所選擇")
+        exchange_layout = QVBoxLayout(exchange_group)
+        
+        # 全選勾選框（只顯示勾選框，不顯示文字）
+        self.select_all_checkbox = QCheckBox()
+        self.select_all_checkbox.setChecked(True)  # 預設全選
+        self.select_all_checkbox.clicked.connect(self.on_select_all_clicked)
+        exchange_layout.addWidget(self.select_all_checkbox)
+        
+        # 個別交易所勾選框，三個一排
+        self.exchange_checkboxes = {}
+        exchange_names = self.config_manager.get_exchange_names()
+        
+        # 創建水平佈局來放置三個勾選框
+        exchanges_row_layout = QHBoxLayout()
+        
+        for i, exchange_name in enumerate(exchange_names):
+            checkbox = QCheckBox(exchange_name.upper())
+            checkbox.setChecked(True)  # 預設全選
+            checkbox.clicked.connect(self.on_exchange_checkbox_clicked)
+            self.exchange_checkboxes[exchange_name] = checkbox
+            exchanges_row_layout.addWidget(checkbox)
+        
+        # 添加彈性空間，讓勾選框向左對齊
+        exchanges_row_layout.addStretch()
+        
+        exchange_layout.addLayout(exchanges_row_layout)
+        control_layout.addWidget(exchange_group)
         
         # 幣種輸入
         control_layout.addWidget(QLabel("幣種:"))
@@ -207,6 +231,26 @@ class MainWindow(QMainWindow):
     def setup_connections(self):
         """設定信號連接"""
         self.enhanced_query_btn.clicked.connect(self.enhanced_query)
+    
+    def on_select_all_clicked(self):
+        """處理全選勾選框點擊"""
+        is_checked = self.select_all_checkbox.isChecked()
+        
+        # 設定所有交易所勾選框的狀態
+        for checkbox in self.exchange_checkboxes.values():
+            checkbox.setChecked(is_checked)
+    
+    def on_exchange_checkbox_clicked(self):
+        """處理個別交易所勾選框點擊"""
+        # 檢查是否所有交易所都被選中
+        all_checked = all(checkbox.isChecked() for checkbox in self.exchange_checkboxes.values())
+        any_checked = any(checkbox.isChecked() for checkbox in self.exchange_checkboxes.values())
+        
+        # 更新全選勾選框的狀態
+        if all_checked:
+            self.select_all_checkbox.setChecked(True)
+        else:
+            self.select_all_checkbox.setChecked(False)
         
             
     
@@ -216,15 +260,29 @@ class MainWindow(QMainWindow):
         if not currency:
             self.log("請輸入幣種名稱")
             return
+        
+        # 獲取選中的交易所
+        selected_exchanges = []
+        for exchange_name, checkbox in self.exchange_checkboxes.items():
+            if checkbox.isChecked():
+                selected_exchanges.append(exchange_name)
+        
+        if not selected_exchanges:
+            self.log("請至少選擇一個交易所")
+            return
             
-        self.log(f"🔍 開始智能識別 {currency}...")
+        if len(selected_exchanges) == len(self.config_manager.get_exchange_names()):
+            self.log(f"🔍 開始智能識別 {currency} (所有交易所)...")
+        else:
+            self.log(f"🔍 開始智能識別 {currency} ({', '.join(sorted(selected_exchanges))})...")
         self.log("🔍 正在從交易所獲取完整數據，這可能需要幾秒...")
         
         self.show_progress()
         self.clear_results()
         
-        # 儲存當前幣種
+        # 儲存當前幣種和選中的交易所
         self.current_enhanced_currency = currency
+        self.current_selected_exchanges = set(selected_exchanges)
         
         # 直接啟動智能識別
         self.start_enhanced_identification()
@@ -232,7 +290,7 @@ class MainWindow(QMainWindow):
     def start_enhanced_identification(self):
         """啟動智能識別部分"""
         # 創建工作器並連接信號
-        self.enhanced_worker = EnhancedQueryWorker(self.exchange_manager, self.current_enhanced_currency)
+        self.enhanced_worker = EnhancedQueryWorker(self.exchange_manager, self.current_enhanced_currency, self.current_selected_exchanges)
         self.enhanced_worker.finished.connect(self.on_enhanced_query_completed)
         self.enhanced_worker.error.connect(self.on_enhanced_query_error)
         
@@ -420,10 +478,11 @@ class MainWindow(QMainWindow):
         """獲取時間戳"""
         from datetime import datetime
         return datetime.now().strftime("%H:%M:%S")
-        
+    
     def closeEvent(self, event):
         """視窗關閉事件"""
         event.accept()
+
 
 
 def main():

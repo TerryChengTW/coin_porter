@@ -87,11 +87,12 @@ class ExchangeManager:
         
         return raw_data_by_exchange, searchable_data_by_exchange
 
-    async def enhanced_currency_query(self, currency: str) -> Tuple[CoinIdentificationResult, Dict[str, List[SearchableCoinInfo]]]:
+    async def enhanced_currency_query(self, currency: str, selected_exchanges: set = None) -> Tuple[CoinIdentificationResult, Dict[str, List[SearchableCoinInfo]]]:
         """增強的幣種查詢 - 使用重構後的 CoinIdentifier 統一處理
         
         Args:
             currency: 用戶輸入的幣種符號
+            selected_exchanges: 指定查詢的交易所，如果為 None 則查詢所有交易所
             
         Returns:
             CoinIdentificationResult: 包含所有可能匹配的幣種及其網路資訊
@@ -102,12 +103,22 @@ class ExchangeManager:
         log_debug("獲取所有交易所完整數據...")
         raw_data_by_exchange, searchable_data_by_exchange = await self.get_all_coins_data()
         
+        # 如果指定了特定交易所，過濾數據
+        if selected_exchanges:
+            filtered_searchable_data = {
+                exchange: data for exchange, data in searchable_data_by_exchange.items()
+                if exchange in selected_exchanges
+            }
+            log_debug(f"過濾後的交易所: {list(filtered_searchable_data.keys())}")
+        else:
+            filtered_searchable_data = searchable_data_by_exchange
+        
         # 使用重構後的 CoinIdentifier 統一處理
         log_debug("使用 CoinIdentifier 進行統一識別...")
-        identification_result = self.coin_identifier.identify_currency(currency, searchable_data_by_exchange)
+        identification_result = self.coin_identifier.identify_currency(currency, filtered_searchable_data)
         
         log_debug(f"最終結果: {len(identification_result.verified_matches)} 個驗證匹配")
-        return identification_result, searchable_data_by_exchange
+        return identification_result, filtered_searchable_data
     
     # 重複的業務邏輯已移動到 CoinIdentifier 中
     # 保持 ExchangeManager 專注於數據獲取和管理功能
