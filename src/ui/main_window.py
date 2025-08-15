@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         # 初始化排序相關變數
         self.original_data = []  # 儲存原始資料順序
         self.sort_states = {}  # 每欄的排序狀態 (0=原始, 1=升序, 2=降序)
+        self.pending_variants = []  # 暫存變體數據供統一格式化
         
         # 設定 logger UI 回呼
         set_ui_log_callback(self.log_without_timestamp)
@@ -349,6 +350,9 @@ class MainWindow(QMainWindow):
             
         self.log(f"📊 處理結果: 原始符號={result.original_symbol}")
         
+        # 清空暫存的變體數據
+        self.pending_variants = []
+        
         # 分類顯示查詢結果
         original_currency = result.original_symbol
         traditional_matches = []
@@ -360,7 +364,7 @@ class MainWindow(QMainWindow):
             elif match.source == "smart":
                 smart_matches.append(match)
         
-        # 顯示傳統查詢結果
+        # 收集傳統查詢結果
         if traditional_matches:
             self.log(f"📋 傳統查詢找到 {len(traditional_matches)} 個匹配")
             for match in traditional_matches:
@@ -368,7 +372,7 @@ class MainWindow(QMainWindow):
         else:
             self.log("📋 傳統查詢: 無支援網路")
         
-        # 顯示智能識別發現的額外匹配
+        # 收集智能識別發現的額外匹配
         if smart_matches:
             self.log(f"✨ 智能識別找到 {len(smart_matches)} 個額外的匹配項目")
             for i, match in enumerate(smart_matches):
@@ -379,12 +383,15 @@ class MainWindow(QMainWindow):
         else:
             self.log("ℹ️ 智能識別沒有找到額外的匹配項目")
         
-        # 顯示可能的匹配  
+        # 收集可能的匹配  
         if result.possible_matches:
             self.log(f"🤔 找到 {len(result.possible_matches)} 個可能的匹配項目")
             for i, match in enumerate(result.possible_matches):
                 self.log(f"  ❓ 可能匹配{i+1}: {match.exchange} - {match.symbol} ({match.network})")
                 self.add_coin_variant_to_table(match, "可能匹配")
+        
+        # 統一格式化並添加到表格
+        self.finalize_variants_to_table()
         
         # 顯示除錯資訊
         if result.debug_info:
@@ -437,10 +444,12 @@ class MainWindow(QMainWindow):
         else:
             currency = self.currency_combo.currentText().upper()
         
+        # 先收集所有數據
+        networks_data = []
+        min_withdrawals = []
+        withdrawal_fees = []
+        
         for network in networks:
-            row = self.results_table.rowCount()
-            self.results_table.insertRow(row)
-            
             # 決定要顯示的幣種符號（優先使用實際符號）
             display_symbol = network.actual_symbol if network.actual_symbol else currency
             
@@ -451,16 +460,39 @@ class MainWindow(QMainWindow):
             elif not network.withdrawal_enabled:
                 status = "停止出金"
             
+            networks_data.append({
+                'exchange': exchange_name.upper(),
+                'symbol': display_symbol,
+                'network': network.network,
+                'min_withdrawal': network.min_withdrawal,
+                'withdrawal_fee': network.withdrawal_fee,
+                'status': status,
+                'contract_address': network.contract_address or "",
+                'type': query_type
+            })
+            
+            min_withdrawals.append(network.min_withdrawal)
+            withdrawal_fees.append(network.withdrawal_fee)
+        
+        # 對齊格式化數字
+        aligned_min_withdrawals = self.align_decimal_numbers(min_withdrawals)
+        aligned_withdrawal_fees = self.align_decimal_numbers(withdrawal_fees)
+        
+        # 添加到表格
+        for i, network_data in enumerate(networks_data):
+            row = self.results_table.rowCount()
+            self.results_table.insertRow(row)
+            
             # 準備資料
             row_data = [
-                exchange_name.upper(),
-                display_symbol,
-                network.network,
-                f"{network.min_withdrawal:.8g}",
-                f"{network.withdrawal_fee:.8g}",
-                status,
-                network.contract_address or "",
-                query_type
+                network_data['exchange'],
+                network_data['symbol'],
+                network_data['network'],
+                aligned_min_withdrawals[i],
+                aligned_withdrawal_fees[i],
+                network_data['status'],
+                network_data['contract_address'],
+                network_data['type']
             ]
             
             # 儲存原始資料
@@ -472,30 +504,62 @@ class MainWindow(QMainWindow):
     
     def add_coin_variant_to_table(self, variant, match_type: str):
         """將幣種變體添加到表格"""
-        row = self.results_table.rowCount()
-        self.results_table.insertRow(row)
-        
         # 嘗試從快取數據獲取真實的手續費、限額和狀態信息
         min_withdrawal, withdrawal_fee, status = self._get_network_details_and_status(variant)
         
-        # 準備資料
-        row_data = [
-            variant.exchange.upper(),
-            variant.symbol,
-            variant.network,
-            f"{min_withdrawal:.8g}" if min_withdrawal is not None else "N/A",
-            f"{withdrawal_fee:.8g}" if withdrawal_fee is not None else "N/A",
-            status if status else "未知",
-            variant.contract_address or "",
-            match_type
-        ]
+        # 收集數據供統一格式化
+        self.pending_variants.append({
+            'variant': variant,
+            'match_type': match_type,
+            'min_withdrawal': min_withdrawal,
+            'withdrawal_fee': withdrawal_fee,
+            'status': status if status else "未知"
+        })
+    
+    def finalize_variants_to_table(self):
+        """統一格式化所有變體數據並添加到表格"""
+        if not self.pending_variants:
+            return
         
-        # 儲存原始資料
-        self.original_data.append(row_data)
+        # 收集所有最小出金和手續費數據
+        min_withdrawals = []
+        withdrawal_fees = []
         
-        # 填入表格
-        for col, value in enumerate(row_data):
-            self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
+        for variant_data in self.pending_variants:
+            min_withdrawals.append(variant_data['min_withdrawal'])
+            withdrawal_fees.append(variant_data['withdrawal_fee'])
+        
+        # 統一對齊格式化
+        aligned_min_withdrawals = self.align_decimal_numbers(min_withdrawals)
+        aligned_withdrawal_fees = self.align_decimal_numbers(withdrawal_fees)
+        
+        # 添加到表格
+        for i, variant_data in enumerate(self.pending_variants):
+            variant = variant_data['variant']
+            row = self.results_table.rowCount()
+            self.results_table.insertRow(row)
+            
+            # 準備資料
+            row_data = [
+                variant.exchange.upper(),
+                variant.symbol,
+                variant.network,
+                aligned_min_withdrawals[i],
+                aligned_withdrawal_fees[i],
+                variant_data['status'],
+                variant.contract_address or "",
+                variant_data['match_type']
+            ]
+            
+            # 儲存原始資料
+            self.original_data.append(row_data)
+            
+            # 填入表格
+            for col, value in enumerate(row_data):
+                self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
+        
+        # 清空暫存數據
+        self.pending_variants = []
         
         
     def _get_network_details_and_status(self, variant):
@@ -585,6 +649,7 @@ class MainWindow(QMainWindow):
         """清空結果表格"""
         self.results_table.setRowCount(0)
         self.original_data.clear()  # 同時清空原始資料
+        self.pending_variants.clear()  # 清空暫存的變體數據
         # 重置所有欄位的排序狀態
         for i in range(8):
             self.sort_states[i] = 0
@@ -640,6 +705,77 @@ class MainWindow(QMainWindow):
         """獲取時間戳"""
         from datetime import datetime
         return datetime.now().strftime("%H:%M:%S")
+    
+    def format_decimal_number(self, value) -> str:
+        """將科學記號轉換為普通小數格式"""
+        if value is None:
+            return "N/A"
+        
+        # 轉換為float以處理字符串格式的科學記號
+        try:
+            if isinstance(value, str):
+                float_value = float(value)
+            else:
+                float_value = float(value)
+        except (ValueError, TypeError):
+            return str(value)
+        
+        # 如果值為0，直接返回"0"
+        if float_value == 0:
+            return "0"
+        
+        # 使用 Decimal 來精確處理小數位數
+        from decimal import Decimal, getcontext
+        getcontext().prec = 50  # 設定精度
+        
+        # 轉換為 Decimal 來避免浮點數精度問題
+        decimal_value = Decimal(str(float_value))
+        
+        # 轉換為字符串並去掉尾隨的零
+        formatted = f"{decimal_value:.20f}".rstrip('0').rstrip('.')
+        
+        return formatted
+    
+    def align_decimal_numbers(self, values: list) -> list:
+        """對齊小數點位數顯示，找出所有數字中最多的小數位數並統一格式"""
+        if not values:
+            return []
+        
+        # 先轉換所有值為普通小數格式
+        formatted_values = []
+        max_decimal_places = 0
+        
+        for value in values:
+            formatted = self.format_decimal_number(value)
+            formatted_values.append(formatted)
+            
+            # 計算所有有效數字的小數位數（包括0）
+            if formatted != "N/A":
+                if '.' in formatted:
+                    decimal_places = len(formatted.split('.')[1])
+                    max_decimal_places = max(max_decimal_places, decimal_places)
+        
+        # 統一小數位數顯示
+        aligned_values = []
+        for formatted in formatted_values:
+            if formatted == "N/A":
+                aligned_values.append(formatted)
+            elif '.' not in formatted:
+                # 沒有小數點的數字（包括整數和0）
+                if max_decimal_places > 0:
+                    aligned_values.append(f"{formatted}.{'0' * max_decimal_places}")
+                else:
+                    aligned_values.append(formatted)
+            else:
+                # 已經有小數點，補齊位數到最大位數
+                current_decimal_places = len(formatted.split('.')[1])
+                if current_decimal_places < max_decimal_places:
+                    zeros_to_add = max_decimal_places - current_decimal_places
+                    aligned_values.append(f"{formatted}{'0' * zeros_to_add}")
+                else:
+                    aligned_values.append(formatted)
+        
+        return aligned_values
     
     
     def copy_selected_cells(self):
