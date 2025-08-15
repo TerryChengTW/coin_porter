@@ -63,6 +63,10 @@ class MainWindow(QMainWindow):
         self.config_manager = ExchangeConfigManager()
         self.exchange_manager = ExchangeManager(self.api_manager)
         
+        # 初始化排序相關變數
+        self.original_data = []  # 儲存原始資料順序
+        self.sort_states = {}  # 每欄的排序狀態 (0=原始, 1=升序, 2=降序)
+        
         # 設定 logger UI 回呼
         set_ui_log_callback(self.log_without_timestamp)
         
@@ -151,6 +155,10 @@ class MainWindow(QMainWindow):
         self.enhanced_query_btn = QPushButton("智能幣種識別")
         control_layout.addWidget(self.enhanced_query_btn)
         
+        # 模擬數據按鈕（用於測試排序功能）
+        self.mock_data_btn = QPushButton("加載模擬數據")
+        control_layout.addWidget(self.mock_data_btn)
+        
         control_layout.addStretch()
         layout.addWidget(control_group)
         
@@ -166,9 +174,14 @@ class MainWindow(QMainWindow):
             "交易所", "幣種", "網路", "最小出金", "手續費", "狀態", "合約地址", "類型"
         ])
         
-        # 設定表格樣式
+        # 設定表格樣式和排序
         header = self.results_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
+        header.sectionClicked.connect(self.on_header_clicked)
+        
+        # 初始化每欄的排序狀態為原始狀態(0)
+        for i in range(8):
+            self.sort_states[i] = 0
         
         layout.addWidget(self.results_table)
         
@@ -231,6 +244,7 @@ class MainWindow(QMainWindow):
     def setup_connections(self):
         """設定信號連接"""
         self.enhanced_query_btn.clicked.connect(self.enhanced_query)
+        self.mock_data_btn.clicked.connect(self.load_mock_data)
     
     def on_select_all_clicked(self):
         """處理全選勾選框點擊"""
@@ -367,6 +381,38 @@ class MainWindow(QMainWindow):
                 self.log(f"🔍 [警告] {debug}")
         
         self.log("🎉 智能識別完成")
+    
+    def load_mock_data(self):
+        """加載模擬數據用於測試排序功能"""
+        self.log("📂 加載模擬數據...")
+        self.clear_results()
+        
+        # 模擬數據
+        mock_data = [
+            ["BINANCE", "BTC", "BTC", "0.001", "0.0005", "正常", "", "模擬數據"],
+            ["BYBIT", "BTC", "BTC", "0.002", "0.0003", "正常", "", "模擬數據"],
+            ["BITGET", "BTC", "Bitcoin", "0.0015", "0.0004", "停止入金", "", "模擬數據"],
+            ["BINANCE", "ETH", "ETH", "0.01", "0.005", "正常", "0x123...abc", "模擬數據"],
+            ["BYBIT", "ETH", "ERC20", "0.02", "0.003", "正常", "0x123...abc", "模擬數據"],
+            ["BITGET", "ETH", "Ethereum", "0.015", "0.004", "停止出金", "0x123...abc", "模擬數據"],
+            ["BINANCE", "USDT", "TRC20", "10", "1", "正常", "TR7...123", "模擬數據"],
+            ["BYBIT", "USDT", "ERC20", "20", "5", "正常", "0xdAC...321", "模擬數據"],
+            ["BITGET", "USDT", "BSC", "5", "0.8", "正常", "0x55d...456", "模擬數據"],
+            ["BINANCE", "USDC", "ERC20", "10", "5", "正常", "0xA0b...789", "模擬數據"],
+        ]
+        
+        # 將模擬數據添加到表格
+        for row_data in mock_data:
+            # 儲存原始資料
+            self.original_data.append(row_data)
+            
+            # 添加到表格
+            row = self.results_table.rowCount()
+            self.results_table.insertRow(row)
+            for col, value in enumerate(row_data):
+                self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
+        
+        self.log(f"✅ 已加載 {len(mock_data)} 筆模擬數據，可點擊表格標題測試排序功能")
             
         
         
@@ -386,46 +432,58 @@ class MainWindow(QMainWindow):
             # 決定要顯示的幣種符號（優先使用實際符號）
             display_symbol = network.actual_symbol if network.actual_symbol else currency
             
-            # 填入資料
-            self.results_table.setItem(row, 0, QTableWidgetItem(exchange_name.upper()))
-            self.results_table.setItem(row, 1, QTableWidgetItem(display_symbol))
-            self.results_table.setItem(row, 2, QTableWidgetItem(network.network))
-            self.results_table.setItem(row, 3, QTableWidgetItem(f"{network.min_withdrawal:.8g}"))
-            self.results_table.setItem(row, 4, QTableWidgetItem(f"{network.withdrawal_fee:.8g}"))
-            
             # 狀態
             status = "正常"
             if not network.deposit_enabled:
                 status = "停止入金"
             elif not network.withdrawal_enabled:
                 status = "停止出金"
-            self.results_table.setItem(row, 5, QTableWidgetItem(status))
             
-            # 合約地址和類型
-            self.results_table.setItem(row, 6, QTableWidgetItem(network.contract_address or ""))
-            self.results_table.setItem(row, 7, QTableWidgetItem(query_type))
+            # 準備資料
+            row_data = [
+                exchange_name.upper(),
+                display_symbol,
+                network.network,
+                f"{network.min_withdrawal:.8g}",
+                f"{network.withdrawal_fee:.8g}",
+                status,
+                network.contract_address or "",
+                query_type
+            ]
+            
+            # 儲存原始資料
+            self.original_data.append(row_data)
+            
+            # 填入表格
+            for col, value in enumerate(row_data):
+                self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
     
     def add_coin_variant_to_table(self, variant, match_type: str):
         """將幣種變體添加到表格"""
         row = self.results_table.rowCount()
         self.results_table.insertRow(row)
         
-        # 填入資料
-        self.results_table.setItem(row, 0, QTableWidgetItem(variant.exchange.upper()))
-        self.results_table.setItem(row, 1, QTableWidgetItem(variant.symbol))
-        self.results_table.setItem(row, 2, QTableWidgetItem(variant.network))
-        
         # 嘗試從快取數據獲取真實的手續費、限額和狀態信息
         min_withdrawal, withdrawal_fee, status = self._get_network_details_and_status(variant)
-        self.results_table.setItem(row, 3, QTableWidgetItem(f"{min_withdrawal:.8g}" if min_withdrawal is not None else "N/A"))
-        self.results_table.setItem(row, 4, QTableWidgetItem(f"{withdrawal_fee:.8g}" if withdrawal_fee is not None else "N/A"))
         
-        # 狀態（正常/停止入金/停止出金）
-        self.results_table.setItem(row, 5, QTableWidgetItem(status if status else "未知"))
+        # 準備資料
+        row_data = [
+            variant.exchange.upper(),
+            variant.symbol,
+            variant.network,
+            f"{min_withdrawal:.8g}" if min_withdrawal is not None else "N/A",
+            f"{withdrawal_fee:.8g}" if withdrawal_fee is not None else "N/A",
+            status if status else "未知",
+            variant.contract_address or "",
+            match_type
+        ]
         
-        # 合約地址和類型
-        self.results_table.setItem(row, 6, QTableWidgetItem(variant.contract_address))
-        self.results_table.setItem(row, 7, QTableWidgetItem("智能識別"))
+        # 儲存原始資料
+        self.original_data.append(row_data)
+        
+        # 填入表格
+        for col, value in enumerate(row_data):
+            self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
         
         
     def _get_network_details_and_status(self, variant):
@@ -451,9 +509,75 @@ class MainWindow(QMainWindow):
                         
         return None, None, None
             
+    def on_header_clicked(self, logical_index):
+        """處理表格標題欄位點擊，實現三種排序狀態循環"""
+        # 獲取當前欄位的排序狀態
+        current_state = self.sort_states[logical_index]
+        
+        # 重置其他欄位的排序狀態為原始狀態
+        for i in range(8):
+            if i != logical_index:
+                self.sort_states[i] = 0
+        
+        # 循環切換當前欄位的排序狀態：原始(0) -> 升序(1) -> 降序(2) -> 原始(0)
+        new_state = (current_state + 1) % 3
+        self.sort_states[logical_index] = new_state
+        
+        # 更新表格標題顯示排序狀態
+        self.update_header_labels()
+        
+        # 根據新狀態進行排序
+        if new_state == 0:
+            # 恢復原始順序
+            self.restore_original_order()
+        elif new_state == 1:
+            # 升序排序
+            self.results_table.sortItems(logical_index, Qt.AscendingOrder)
+        else:
+            # 降序排序
+            self.results_table.sortItems(logical_index, Qt.DescendingOrder)
+    
+    def update_header_labels(self):
+        """更新表格標題，顯示當前排序狀態"""
+        original_labels = ["交易所", "幣種", "網路", "最小出金", "手續費", "狀態", "合約地址", "類型"]
+        
+        for i, label in enumerate(original_labels):
+            if self.sort_states[i] == 1:
+                # 升序
+                new_label = f"{label} ↑"
+            elif self.sort_states[i] == 2:
+                # 降序
+                new_label = f"{label} ↓"
+            else:
+                # 原始狀態
+                new_label = label
+            
+            self.results_table.setHorizontalHeaderItem(i, QTableWidgetItem(new_label))
+    
+    def restore_original_order(self):
+        """恢復表格的原始資料順序"""
+        if not self.original_data:
+            return
+            
+        # 清空表格
+        self.results_table.setRowCount(0)
+        
+        # 按原始順序重新填入資料
+        for row_data in self.original_data:
+            row = self.results_table.rowCount()
+            self.results_table.insertRow(row)
+            for col, value in enumerate(row_data):
+                self.results_table.setItem(row, col, QTableWidgetItem(str(value)))
+    
     def clear_results(self):
         """清空結果表格"""
         self.results_table.setRowCount(0)
+        self.original_data.clear()  # 同時清空原始資料
+        # 重置所有欄位的排序狀態
+        for i in range(8):
+            self.sort_states[i] = 0
+        # 重置表格標題
+        self.update_header_labels()
         
     def show_progress(self):
         """顯示進度條"""
