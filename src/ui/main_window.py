@@ -5,10 +5,10 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QComboBox, QPushButton, QTextEdit, QSplitter,
     QGroupBox, QProgressBar, QTabWidget, QTableWidget,
-    QTableWidgetItem, QHeaderView, QCheckBox
+    QTableWidgetItem, QHeaderView, QCheckBox, QAbstractItemView, QAbstractButton
 )
 from PySide6.QtCore import Qt, QThread, Signal, QTimer, Slot, QObject
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QFont, QIcon, QKeySequence, QClipboard
 
 from ..core.exchanges.manager import ExchangeManager
 from ..core.config.api_keys import APIKeyManager
@@ -159,6 +159,7 @@ class MainWindow(QMainWindow):
         self.mock_data_btn = QPushButton("加載模擬數據")
         control_layout.addWidget(self.mock_data_btn)
         
+        
         control_layout.addStretch()
         layout.addWidget(control_group)
         
@@ -174,10 +175,21 @@ class MainWindow(QMainWindow):
             "交易所", "幣種", "網路", "最小出金", "手續費", "狀態", "合約地址", "類型"
         ])
         
+        # 設定表格選擇模式，支援多選
+        self.results_table.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.results_table.setSelectionBehavior(QAbstractItemView.SelectItems)
+        
         # 設定表格樣式和排序
         header = self.results_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         header.sectionClicked.connect(self.on_header_clicked)
+        
+        # 啟用表格左上角按鈕，支援全選
+        self.results_table.setCornerButtonEnabled(True)
+        
+        # 連接左上角按鈕的點擊事件到全選功能
+        # 使用 QTimer.singleShot 確保在 UI 初始化後再連接信號
+        QTimer.singleShot(0, self.connect_corner_button)
         
         # 初始化每欄的排序狀態為原始狀態(0)
         for i in range(8):
@@ -598,10 +610,112 @@ class MainWindow(QMainWindow):
         """記錄訊息到日誌（不帶時間戳，供 logger 回呼使用）"""
         self.log_text.append(f"[{self.get_timestamp()}] {message}")
         
+    def connect_corner_button(self):
+        """連接表格左上角按鈕的點擊事件"""
+        # 尋找表格的 corner button
+        def find_corner_button(widget):
+            for child in widget.findChildren(QAbstractButton):
+                # corner button 通常沒有文字且大小較小
+                if not child.text() and child.size().width() < 50:
+                    return child
+            return None
+        
+        corner_button = find_corner_button(self.results_table)
+        if corner_button:
+            corner_button.clicked.connect(self.on_corner_button_clicked)
+    
+    def on_corner_button_clicked(self):
+        """處理表格左上角按鈕點擊"""
+        self.select_all_table()
+    
+    def select_all_table(self):
+        """全選表格內容"""
+        if self.results_table.rowCount() > 0:
+            self.results_table.selectAll()
+            self.log(f"已全選表格 {self.results_table.rowCount()} 行內容")
+        else:
+            self.log("表格無內容可選")
+    
     def get_timestamp(self) -> str:
         """獲取時間戳"""
         from datetime import datetime
         return datetime.now().strftime("%H:%M:%S")
+    
+    
+    def copy_selected_cells(self):
+        """複製選中的表格內容到剪貼簿"""
+        selected_ranges = self.results_table.selectedRanges()
+        if not selected_ranges:
+            return
+        
+        # 收集所有選中的儲存格
+        selected_cells = []
+        for selected_range in selected_ranges:
+            for row in range(selected_range.topRow(), selected_range.bottomRow() + 1):
+                for col in range(selected_range.leftColumn(), selected_range.rightColumn() + 1):
+                    item = self.results_table.item(row, col)
+                    cell_text = item.text() if item else ""
+                    selected_cells.append((row, col, cell_text))
+        
+        if not selected_cells:
+            return
+        
+        # 按行列排序
+        selected_cells.sort(key=lambda x: (x[0], x[1]))
+        
+        # 轉換為表格格式
+        if len(selected_cells) == 1:
+            # 單個儲存格
+            clipboard_text = selected_cells[0][2]
+        else:
+            # 多個儲存格，構建表格格式
+            rows_data = {}
+            for row, col, text in selected_cells:
+                if row not in rows_data:
+                    rows_data[row] = {}
+                rows_data[row][col] = text
+            
+            # 構建文字格式（用tab分隔列，用換行分隔行）
+            clipboard_lines = []
+            for row in sorted(rows_data.keys()):
+                row_data = rows_data[row]
+                if len(row_data) == 1:
+                    # 單列資料
+                    clipboard_lines.append(list(row_data.values())[0])
+                else:
+                    # 多列資料，用tab分隔
+                    min_col = min(row_data.keys())
+                    max_col = max(row_data.keys())
+                    row_cells = []
+                    for col in range(min_col, max_col + 1):
+                        row_cells.append(row_data.get(col, ""))
+                    clipboard_lines.append("\t".join(row_cells))
+            
+            clipboard_text = "\n".join(clipboard_lines)
+        
+        # 複製到剪貼簿
+        clipboard = QApplication.clipboard()
+        clipboard.setText(clipboard_text)
+        
+        # 記錄到日誌
+        selected_count = len(selected_cells)
+        if selected_count == 1:
+            self.log(f"已複製 1 個儲存格")
+        else:
+            self.log(f"已複製 {selected_count} 個儲存格")
+    
+    def keyPressEvent(self, event):
+        """處理鍵盤事件"""
+        # 檢查是否按下 Ctrl+C
+        if event.matches(QKeySequence.Copy):
+            # 如果焦點在表格上，執行自定義複製
+            if self.results_table.hasFocus():
+                self.copy_selected_cells()
+                return
+        
+        
+        # 其他按鍵交給父類處理
+        super().keyPressEvent(event)
     
     def closeEvent(self, event):
         """視窗關閉事件"""
