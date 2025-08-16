@@ -176,6 +176,13 @@ class MainWindow(QMainWindow):
             "交易所", "幣種", "網路", "最小出金", "手續費", "狀態", "合約地址", "類型"
         ])
         
+        # 設定表格字體為等寬字體，確保數字對齊效果
+        table_font = QFont("Consolas", 9)  # 使用 Consolas 等寬字體
+        if not table_font.exactMatch():
+            # 如果 Consolas 不可用，使用其他等寬字體
+            table_font = QFont("Courier New", 9)
+        self.results_table.setFont(table_font)
+        
         # 設定表格選擇模式，支援多選
         self.results_table.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.results_table.setSelectionBehavior(QAbstractItemView.SelectItems)
@@ -455,7 +462,9 @@ class MainWindow(QMainWindow):
             
             # 狀態
             status = "正常"
-            if not network.deposit_enabled:
+            if not network.deposit_enabled and not network.withdrawal_enabled:
+                status = "停止出入金"
+            elif not network.deposit_enabled:
                 status = "停止入金"
             elif not network.withdrawal_enabled:
                 status = "停止出金"
@@ -737,7 +746,7 @@ class MainWindow(QMainWindow):
         return formatted
     
     def align_decimal_numbers(self, values: list) -> list:
-        """對齊小數點位數顯示，找出所有數字中最多的小數位數並統一格式"""
+        """對齊小數點位數顯示並向右對齊到最大總位數"""
         if not values:
             return []
         
@@ -756,24 +765,38 @@ class MainWindow(QMainWindow):
                     max_decimal_places = max(max_decimal_places, decimal_places)
         
         # 統一小數位數顯示
-        aligned_values = []
+        unified_values = []
         for formatted in formatted_values:
             if formatted == "N/A":
-                aligned_values.append(formatted)
+                unified_values.append(formatted)
             elif '.' not in formatted:
                 # 沒有小數點的數字（包括整數和0）
                 if max_decimal_places > 0:
-                    aligned_values.append(f"{formatted}.{'0' * max_decimal_places}")
+                    unified_values.append(f"{formatted}.{'0' * max_decimal_places}")
                 else:
-                    aligned_values.append(formatted)
+                    unified_values.append(formatted)
             else:
                 # 已經有小數點，補齊位數到最大位數
                 current_decimal_places = len(formatted.split('.')[1])
                 if current_decimal_places < max_decimal_places:
                     zeros_to_add = max_decimal_places - current_decimal_places
-                    aligned_values.append(f"{formatted}{'0' * zeros_to_add}")
+                    unified_values.append(f"{formatted}{'0' * zeros_to_add}")
                 else:
-                    aligned_values.append(formatted)
+                    unified_values.append(formatted)
+        
+        # 計算最大總長度（用於右對齊）
+        max_length = 0
+        for value in unified_values:
+            if value != "N/A":
+                max_length = max(max_length, len(value))
+        
+        # 向右對齊到最大長度
+        aligned_values = []
+        for value in unified_values:
+            if value == "N/A":
+                aligned_values.append(value.rjust(max_length))
+            else:
+                aligned_values.append(value.rjust(max_length))
         
         return aligned_values
     
