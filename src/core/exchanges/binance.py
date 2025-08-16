@@ -1,6 +1,7 @@
 import asyncio
-from typing import Dict, List, Optional
-from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from .base import BaseExchange, NetworkInfo, TransferResult, AccountConfig, RawCoinData, SearchableCoinInfo, SearchableNetworkInfo
 
 try:
     from binance_common.configuration import ConfigurationRestAPI
@@ -36,15 +37,11 @@ class BinanceExchange(BaseExchange):
         
         self._client = Wallet(config_rest_api=configuration)
     
-    async def get_supported_currencies(self) -> List[str]:
-        """獲取支援的幣種列表（需要認證）"""
+    async def get_all_coins_info(self) -> Tuple[List[RawCoinData], List[SearchableCoinInfo]]:
+        """獲取所有幣種的完整資訊，返回原始數據和搜索用數據"""
         self._ensure_auth()
         
-        if not self._client:
-            raise Exception("Binance client not available - SDK may not be installed")
-        
         try:
-            # 在執行緒池中執行同步呼叫
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None, 
@@ -52,52 +49,130 @@ class BinanceExchange(BaseExchange):
             )
             
             data = response.data()
+            raw_data = []
+            searchable_data = []
+            timestamp = datetime.now().isoformat()
             
-            # 提取幣種名稱
-            currencies = []
             for coin_info in data:
-                # Binance SDK 回傳的是物件，不是字典
-                coin = getattr(coin_info, 'coin', '')
-                if coin:
-                    currencies.append(coin)
+                symbol = getattr(coin_info, 'coin', '')
+                if not symbol:
+                    continue
+                
+                # 將 SDK 對象轉換為字典格式以便儲存
+                coin_dict = self._convert_coin_object_to_dict(coin_info)
+                
+                # 創建原始數據
+                raw_coin = RawCoinData(
+                    exchange="binance",
+                    raw_response=coin_dict,
+                    timestamp=timestamp
+                )
+                raw_data.append(raw_coin)
+                
+                # 創建搜索用數據
+                searchable_networks = []
+                network_list = getattr(coin_info, 'network_list', [])
+                
+                # 獲取 denomination（從第一個網路取得）
+                denomination = None
+                if network_list:
+                    first_net = network_list[0]
+                    net_denomination = getattr(first_net, 'denomination', None)
+                    if net_denomination and net_denomination > 1:
+                        denomination = net_denomination
+                
+                for network_info in network_list:
+                    searchable_net = SearchableNetworkInfo(
+                        network=getattr(network_info, 'network', ''),
+                        deposit_enabled=getattr(network_info, 'deposit_enable', False),
+                        withdrawal_enabled=getattr(network_info, 'withdraw_enable', False),
+                        withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
+                        min_deposit=None,  # Binance 沒有明確的最小充值額
+                        min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
+                        max_withdrawal=float(getattr(network_info, 'withdraw_max', 0)) if getattr(network_info, 'withdraw_max', None) else None,
+                        contract_address=getattr(network_info, 'contract_address', None),
+                        browser_url=getattr(network_info, 'contract_address_url', None),
+                        busy=getattr(network_info, 'busy', None),
+                        estimated_arrival_time=getattr(network_info, 'estimated_arrival_time', None),
+                        deposit_desc=getattr(network_info, 'deposit_desc', None),
+                        withdraw_desc=getattr(network_info, 'withdraw_desc', None)
+                    )
+                    searchable_networks.append(searchable_net)
+                
+                searchable_coin = SearchableCoinInfo(
+                    exchange="binance",
+                    symbol=symbol,
+                    name=getattr(coin_info, 'name', symbol),
+                    denomination=denomination,
+                    networks=searchable_networks
+                )
+                searchable_data.append(searchable_coin)
             
-            return sorted(list(set(currencies)))  # 去重並排序
+            return raw_data, searchable_data
             
         except Exception as e:
-            raise Exception(f"Binance query failed: {str(e)}")
+            raise Exception(f"Binance 查詢所有幣種資訊失敗: {str(e)}")
     
-    async def get_currency_networks(self, currency: str) -> List[NetworkInfo]:
-        """獲取指定幣種支援的網路資訊（需要認證）"""
-        self._ensure_auth()
-        
+    def _convert_coin_object_to_dict(self, coin_obj) -> dict:
+        """將 Binance SDK 的幣種對象轉換為字典"""
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self._client.rest_api.all_coins_information()
-            )
+            # 提取幣種基本信息
+            result = {
+                'coin': getattr(coin_obj, 'coin', ''),
+                'depositAllEnable': getattr(coin_obj, 'deposit_all_enable', False),
+                'withdrawAllEnable': getattr(coin_obj, 'withdraw_all_enable', False),
+                'name': getattr(coin_obj, 'name', ''),
+                'free': getattr(coin_obj, 'free', ''),
+                'locked': getattr(coin_obj, 'locked', ''),
+                'freeze': getattr(coin_obj, 'freeze', ''),
+                'withdrawing': getattr(coin_obj, 'withdrawing', ''),
+                'ipoing': getattr(coin_obj, 'ipoing', ''),
+                'ipoable': getattr(coin_obj, 'ipoable', ''),
+                'storage': getattr(coin_obj, 'storage', ''),
+                'isLegalMoney': getattr(coin_obj, 'is_legal_money', False),
+                'trading': getattr(coin_obj, 'trading', False),
+                'networkList': []
+            }
             
-            data = response.data()
+            # 轉換網路列表
+            network_list = getattr(coin_obj, 'network_list', [])
+            for network in network_list:
+                network_dict = {
+                    'network': getattr(network, 'network', ''),
+                    'coin': getattr(network, 'coin', ''),
+                    'withdrawIntegerMultiple': getattr(network, 'withdraw_integer_multiple', ''),
+                    'isDefault': getattr(network, 'is_default', False),
+                    'depositEnable': getattr(network, 'deposit_enable', False),
+                    'withdrawEnable': getattr(network, 'withdraw_enable', False),
+                    'depositDesc': getattr(network, 'deposit_desc', ''),
+                    'withdrawDesc': getattr(network, 'withdraw_desc', ''),
+                    'specialTips': getattr(network, 'special_tips', ''),
+                    'specialWithdrawTips': getattr(network, 'special_withdraw_tips', ''),
+                    'name': getattr(network, 'name', ''),
+                    'resetAddressStatus': getattr(network, 'reset_address_status', False),
+                    'addressRegex': getattr(network, 'address_regex', ''),
+                    'memoRegex': getattr(network, 'memo_regex', ''),
+                    'withdrawFee': getattr(network, 'withdraw_fee', ''),
+                    'withdrawMin': getattr(network, 'withdraw_min', ''),
+                    'withdrawMax': getattr(network, 'withdraw_max', ''),
+                    'minConfirm': getattr(network, 'min_confirm', 0),
+                    'unLockConfirm': getattr(network, 'un_lock_confirm', 0),
+                    'sameAddress': getattr(network, 'same_address', False),
+                    'estimatedArrivalTime': getattr(network, 'estimated_arrival_time', 0),
+                    'busy': getattr(network, 'busy', False),
+                    'contractAddressUrl': getattr(network, 'contract_address_url', ''),
+                    'contractAddress': getattr(network, 'contract_address', '')
+                }
+                result['networkList'].append(network_dict)
             
-            # 尋找指定幣種
-            for coin_info in data:
-                if getattr(coin_info, 'coin', '') == currency.upper():
-                    networks = []
-                    network_list = getattr(coin_info, 'network_list', [])
-                    for network_info in network_list:
-                        networks.append(NetworkInfo(
-                            network=getattr(network_info, 'network', ''),
-                            min_withdrawal=float(getattr(network_info, 'withdraw_min', 0)),
-                            withdrawal_fee=float(getattr(network_info, 'withdraw_fee', 0)),
-                            deposit_enabled=getattr(network_info, 'deposit_enable', False),
-                            withdrawal_enabled=getattr(network_info, 'withdraw_enable', False)
-                        ))
-                    return networks
-            
-            return []  # 找不到該幣種
+            return result
             
         except Exception as e:
-            raise Exception(f"Binance 查詢幣種網路資訊失敗: {str(e)}")
+            # 如果轉換失敗，返回基本信息
+            return {
+                'coin': getattr(coin_obj, 'coin', ''),
+                'error': f"轉換失敗: {str(e)}"
+            }
     
     async def get_deposit_address(self, currency: str, network: str) -> str:
         """獲取入金地址"""

@@ -6,6 +6,7 @@ import json
 import importlib
 from typing import Dict, List, Type, Optional
 from pathlib import Path
+from ..utils.logger import log_error
 
 
 class ExchangeConfig:
@@ -52,23 +53,16 @@ class ExchangeConfigManager:
             exchange_class = getattr(module, config.class_name)
             self._exchange_classes[config.name] = exchange_class
         except (ImportError, AttributeError) as e:
-            print(f"[警告] 無法載入交易所 {config.name}: {e}")
+            log_error(f"無法載入交易所 {config.name}: {e}")
     
     def get_enabled_exchanges(self) -> List[str]:
         """獲取啟用的交易所名稱列表"""
         return [name for name, config in self._exchanges.items() if config.enabled]
     
-    def get_exchange_display_names(self) -> List[str]:
-        """獲取交易所顯示名稱列表"""
-        return [config.display_name for config in self._exchanges.values() if config.enabled]
     
     def get_exchange_names(self) -> List[str]:
         """獲取交易所名稱列表"""
         return [name for name, config in self._exchanges.items() if config.enabled]
-    
-    def get_exchange_config(self, name: str) -> Optional[ExchangeConfig]:
-        """獲取指定交易所的配置"""
-        return self._exchanges.get(name)
     
     def get_exchange_class(self, name: str) -> Optional[Type]:
         """獲取指定交易所的類別"""
@@ -83,8 +77,3 @@ class ExchangeConfigManager:
         """檢查交易所是否啟用"""
         config = self._exchanges.get(name)
         return config.enabled if config else False
-    
-    def register_exchange_class(self, name: str, exchange_class: Type):
-        """手動註冊交易所類別（用於工廠模式）"""
-        if name in self._exchanges and self._exchanges[name].enabled:
-            self._exchange_classes[name] = exchange_class
